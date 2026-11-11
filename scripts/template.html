@@ -93,6 +93,17 @@ svg:active{cursor:grabbing}
 .levels button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 @media (max-width:640px){.levels{top:auto;bottom:12px}#card:not([hidden])~.levels{display:none}}
 text{font-family:var(--body)}
+.tabs{display:inline-flex;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;margin-top:8px}
+.tabs button{border:0;background:none;color:var(--muted);font:600 .78rem var(--body);padding:6px 12px;border-radius:7px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+#morph{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 24px));box-sizing:border-box;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
+#morph[hidden]{display:none}
+#morph input{flex:1;min-width:0;accent-color:var(--accent)}
+#morph .ml{font:600 .72rem var(--body);color:var(--muted);white-space:nowrap}
+#mplay{white-space:nowrap}
+#wrap.morphing .levels,#wrap.morphing .cartouche{display:none!important}
+@media (max-width:640px){#morph{left:12px;right:12px;transform:none;width:auto}#morph .ml{display:none}}
 svg[data-style=chalk]{--land:#25322c;--water:#334c55;--park:#2e4236;--minor:rgba(240,236,225,.2);--ped:rgba(250,228,150,.38);--rail:rgba(240,236,225,.45);--mainfill:rgba(246,243,233,.82);--tfill:rgba(246,243,233,.5);--fg:#f4f1e8;--muted:#cfc9b8;--card:#25322c}
 svg[data-style=chalk] text{font-family:"Caveat",cursive;font-weight:700}
 #wrap[data-style=chalk]::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.55'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -123,7 +134,7 @@ svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b24
 <header>
   <div class="top">
     <div>
-      <h1>Antwerpen <span>caféstad</span></h1>
+      <h1>Antwerpen <span>caféstad</span></h1><nav class="tabs" aria-label="Weergave"><button data-tab="map" aria-pressed="true">Kaart</button><button data-tab="morph" aria-pressed="false">Poster ↔ kaart</button></nav>
       <p class="sub">De metrokaart van de poster, op de echte stad gelegd. Tik een café, filter, of laat je verrassen.</p>
     </div>
     <div class="search">
@@ -139,6 +150,7 @@ svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b24
   <div id="tip"></div>
   <div id="card" hidden></div>
   <div class="key"><span><i class="dot"></i>adres gevonden</span><span><i class="dot g"></i>positie geschat</span><span>Kaart © OpenStreetMap-bijdragers</span></div>
+  <div id="morph" hidden><button id="mplay" class="btn primary">▶ Speel af</button><span class="ml">Poster</span><input id="mt" type="range" min="0" max="1000" value="0" aria-label="Van poster naar echte kaart"><span class="ml">Echte kaart</span></div>
   <div class="levels" role="group" aria-label="Kaartstijl"><button data-sty="detail">Detail</button><button data-sty="chalk">Krijtbord</button><button data-sty="pirate">Schatkaart</button><button data-sty="neon">Neon</button></div><div class="cartouche" aria-hidden="true"><b>Caerte der Herberghen</b><span>van de vermaerde Stadt Antwerpen</span><i>✕ = goedkoopste pint · Anno 2026</i></div>
   <div class="zoom"><button id="zi" aria-label="Inzoomen">+</button><button id="zo" aria-label="Uitzoomen">−</button><button id="zf" aria-label="Hele kaart">⤢</button></div>
 </div>
@@ -174,6 +186,14 @@ function pirateDeco(O,defs){
   put(SERPENT,'translate(-2400 -2480) rotate(24) scale(1.7)');
   put(SHIP,'translate(-1620 170) scale(1.5)');
 }
+// poster <-> map morph
+let morphT=null;
+const PPm=(()=>{const R=D.stations.map(x=>P(x.lat,x.lon)),Q=D.stations.map(x=>x.pp);
+  const bb=a=>[Math.min(...a.map(p=>p[0])),Math.min(...a.map(p=>p[1])),Math.max(...a.map(p=>p[0])),Math.max(...a.map(p=>p[1]))];
+  const r=bb(R),q=bb(Q),k=Math.sqrt((r[2]-r[0])*(r[3]-r[1])/((q[2]-q[0])*(q[3]-q[1]))),rc=[(r[0]+r[2])/2,(r[1]+r[3])/2],qc=[(q[0]+q[2])/2,(q[1]+q[3])/2];
+  return Object.fromEntries(D.stations.map(x=>[x.n,[rc[0]+(x.pp[0]-qc[0])*k,rc[1]+(x.pp[1]-qc[1])*k]]))})();
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+function pos(x){const r=P(x.lat,x.lon);if(morphT===null)return r;const p=PPm[x.n],e=ease(morphT);return [p[0]+(r[0]-p[0])*e,p[1]+(r[1]-p[1])*e]}
 function drawBase(){
   gBase.innerHTML='';const O=B.osm,R='round',sy=mapStyle;FM=STY[sy];svg.dataset.style=sy;wrap.dataset.style=sy;
   const pth=(d,a)=>el('path',{d,fill:'none','stroke-linecap':R,'stroke-linejoin':R,...a,...ns},gBase);
@@ -217,7 +237,7 @@ function drawLines(){
   gLines.innerHTML='';const s=scale(),n=D.lines.length;
   D.lines.forEach((l,i)=>{
     if(!active(l.id))return;
-    const off=focusLine?0:(i-(n-1)/2)*2.2*s,p=l.s.map(x=>P(st[x].lat,st[x].lon));
+    const off=focusLine?0:(i-(n-1)/2)*2.2*s,p=l.s.map(x=>pos(st[x]));
     const q=p.map((c,j)=>{const a=p[Math.max(0,j-1)],b=p[Math.min(p.length-1,j+1)];const dx=b[0]-a[0],dy=b[1]-a[1],m=Math.hypot(dx,dy)||1;return [c[0]-dy/m*off,c[1]+dx/m*off]});
     const dim=sel&&!st[sel].l.includes(l.id);
     const w=(focusLine?5:3.2)*Math.pow(ZF,.8);
@@ -229,17 +249,17 @@ function drawLines(){
 }
 const PIR={Linkeroever:'Hier zijn draken',Schelde:'De Grote Schelde',Eilandje:'Piratennest',Centrum:'Oude Stadt',Zuid:'Zuyd',Seefhoek:'Seefhoeck',Borgerhout:'Borgerhoudt',Zurenborg:'Zurenborgh',Stadspark:'Stadtspark'};
 function drawStations(){
-  gSt.innerHTML='';gLab.innerHTML='';const s0=scale(),s=s0*ZF;
-  B.poi.forEach(([t,la,lo])=>{const [x,y]=P(la,lo);el('rect',{x:x-2.6*s,y:y-2.6*s,width:5.2*s,height:5.2*s,rx:1*s,fill:'var(--muted)',opacity:.7,'pointer-events':'none'},gLab);if(s0<1.6){const e=el('text',{x:x+5*s,y:y+3*s,'font-size':8.5*s*FM,'font-style':'italic',fill:'var(--muted)',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);e.textContent=t}});
-  if(s0<2.2){let c=0;const vx0=view.x,vy0=view.y,vx1=view.x+view.w,vy1=view.y+view.h,fs=9.8*s*FM;
+  gSt.innerHTML='';gLab.innerHTML='';const s0=scale(),s=s0*ZF,geo=morphT===null||ease(morphT)>.6,posterish=morphT!==null&&ease(morphT)<.15;
+  if(geo)B.poi.forEach(([t,la,lo])=>{const [x,y]=P(la,lo);el('rect',{x:x-2.6*s,y:y-2.6*s,width:5.2*s,height:5.2*s,rx:1*s,fill:'var(--muted)',opacity:.7,'pointer-events':'none'},gLab);if(s0<1.6){const e=el('text',{x:x+5*s,y:y+3*s,'font-size':8.5*s*FM,'font-style':'italic',fill:'var(--muted)',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);e.textContent=t}});
+  if(geo&&s0<2.2){let c=0;const vx0=view.x,vy0=view.y,vx1=view.x+view.w,vy1=view.y+view.h,fs=9.8*s*FM;
     B.osm.N.forEach(([n,L,d,bb],i)=>{if(c>80||bb[2]<vx0||bb[0]>vx1||bb[3]<vy0||bb[1]>vy1)return;if(L<n.length*fs*.58+24*s)return;c++;
       const e=el('text',{'font-size':fs,fill:'var(--muted)',dy:2.6*s,'letter-spacing':'.03em','pointer-events':'none',stroke:'var(--land)','stroke-width':2.4*s,'paint-order':'stroke'},gLab);
       const tp=el('textPath',{href:'#sn'+i,startOffset:'50%','text-anchor':'middle'},e);tp.textContent=n})}
-  B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?(mapStyle==='pirate'?16:13):9.5)*s0*FM,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);const tt=mapStyle==='pirate'&&PIR[t]||t;e.textContent=k==='area'&&mapStyle!=='pirate'&&mapStyle!=='chalk'?tt.toUpperCase():tt});
+  if(geo)B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?(mapStyle==='pirate'?16:13):9.5)*s0*FM,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);const tt=mapStyle==='pirate'&&PIR[t]||t;e.textContent=k==='area'&&mapStyle!=='pirate'&&mapStyle!=='chalk'?tt.toUpperCase():tt});
   const cheapest=mapStyle==='pirate'&&priced().length?priced()[0].n:null;
   D.stations.forEach(x=>{
     if(!x.l.some(active))return;
-    const [cx,cy]=P(x.lat,x.lon),big=x.h||focusLine,r=(x.n===sel?7:big?5.6:3.6)*s,ok=passF(x);
+    const [cx,cy]=pos(x),big=x.h||focusLine,r=(x.n===sel?7:big?5.6:3.6)*s,ok=passF(x);
     if(!ok&&activeF.size&&x.n!==sel){el('circle',{cx,cy,r:2.2*s,fill:'var(--muted)',opacity:.35,'data-n':x.n},gSt);return}
     if(activeF.size&&ok)el('circle',{cx,cy,r:r+5*s,fill:'var(--accent)',opacity:.22},gSt);
     if(x.n===sel)el('circle',{cx,cy,r:r,fill:'var(--accent2)',class:'pulse'},gSt);
@@ -249,19 +269,19 @@ function drawStations(){
     const hit=el('circle',{cx,cy,r:Math.max(r,12*s),fill:'transparent','data-n':x.n},gSt);
     hit.style.cursor='pointer';
     hit.addEventListener('pointerenter',e=>tip(e,x.n));hit.addEventListener('pointerleave',untip);
-    if(x.h||focusLine||s0<1.5||sel===x.n){const t=el('text',{x:cx+r+3*s,y:cy+3.5*s,'font-size':(x.h||sel===x.n?11.5:9.5)*s*FM,'font-weight':x.h||sel===x.n?700:500,fill:'var(--fg)',stroke:'var(--land)','stroke-width':3.2*s,'paint-order':'stroke','data-n':x.n},gLab);t.style.cursor='pointer';t.textContent=x.n}
+    if(x.h||focusLine||s0<1.5||sel===x.n||posterish){const t=el('text',{x:cx+r+3*s,y:cy+3.5*s,'font-size':(x.h||sel===x.n?11.5:posterish?7.5:9.5)*s*FM,'font-weight':x.h||sel===x.n?700:500,fill:'var(--fg)',stroke:'var(--land)','stroke-width':3.2*s,'paint-order':'stroke','data-n':x.n},gLab);t.style.cursor='pointer';t.textContent=x.n}
     if(mapStyle==='pirate'&&cheapest===x.n){const k=11*s;el('path',{d:`M${cx-k} ${cy-k}L${cx+k} ${cy+k}M${cx+k} ${cy-k}L${cx-k} ${cy+k}`,stroke:'#b5332b','stroke-width':4.5*Math.pow(ZF,.6),'stroke-linecap':'round',fill:'none','pointer-events':'none',...ns},gSt);const xt=el('text',{x:cx,y:cy-k-5*s,'font-size':10*s*FM,'text-anchor':'middle','font-style':'italic',fill:'#b5332b',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);xt.textContent='goedkoopste pint'}
     const pr=priceOf(x.n);if(pr!=null&&(priceMode||sel===x.n)){const w=26*s*FM,h=12*s*FM,bx=cx-w/2,by=cy+r+2.5*s;el('rect',{x:bx,y:by,width:w,height:h,rx:h/2,fill:priceColor(pr),'pointer-events':'none'},gLab);const pt=el('text',{x:cx,y:by+h*.74,'font-size':8.5*s*FM,'font-weight':700,'text-anchor':'middle',fill:'#fff','pointer-events':'none'},gLab);pt.textContent=eur(pr)}
   });
 }
 let ZF=1;
-function render(){svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);const s=scale();ZF=Math.min(2.4,Math.max(1,Math.pow(1.3/s,.55)));svg.style.setProperty('--z',Math.min(3.2,Math.max(1,Math.pow(1.3/s,.65))).toFixed(2));const wp=svg.querySelector('#waves');if(wp)wp.setAttribute('patternTransform',`scale(${Math.max(.3,Math.min(1,s/3)).toFixed(3)})`);const gb=svg.querySelector('#glow feGaussianBlur');if(gb)gb.setAttribute('stdDeviation',(3.5*s).toFixed(2));drawLines();drawStations()}
+function render(){{const e=morphT===null?1:ease(morphT);gBase.style.opacity=e;svg.style.background=morphT===null?'':`color-mix(in srgb, var(--land) ${Math.round(e*100)}%, #ffffff)`}svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);const s=scale();ZF=Math.min(2.4,Math.max(1,Math.pow(1.3/s,.55)));svg.style.setProperty('--z',Math.min(3.2,Math.max(1,Math.pow(1.3/s,.65))).toFixed(2));const wp=svg.querySelector('#waves');if(wp)wp.setAttribute('patternTransform',`scale(${Math.max(.3,Math.min(1,s/3)).toFixed(3)})`);const gb=svg.querySelector('#glow feGaussianBlur');if(gb)gb.setAttribute('stdDeviation',(3.5*s).toFixed(2));drawLines();drawStations()}
 const tipEl=document.getElementById('tip');
 function tip(e,t){if(e.pointerType==='touch')return;const r=wrap.getBoundingClientRect();tipEl.textContent=t;tipEl.style.left=(e.clientX-r.left)+'px';tipEl.style.top=(e.clientY-r.top)+'px';tipEl.style.opacity=1}
 function untip(){tipEl.style.opacity=0}
 // smooth camera
 let anim=null;
-function flyTo(lat,lon,w){const [tx,ty]=P(lat,lon);const tw=w||Math.min(view.w,1400),th=tw*view.h/view.w;
+function flyTo(lat,lon,w){if(morphT!==null){render();return}const [tx,ty]=P(lat,lon);const tw=w||Math.min(view.w,1400),th=tw*view.h/view.w;
   const narrow=svg.clientWidth<640, oy=narrow?th*.22:0, ox=narrow?0:-tw*.12;
   const goal={x:tx-tw/2-ox,y:ty-th/2+oy,w:tw,h:th},start={...view},t0=performance.now(),dur=matchMedia('(prefers-reduced-motion: reduce)').matches?0:650;
   cancelAnimationFrame(anim);
@@ -312,7 +332,7 @@ function pick(n,fly){sel=n;const x=st[n];
   card.innerHTML=`<div class="band">${band}</div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">${x.b?esc(x.b):'Onbekend adres'}${x.h?' · knooppunt':''}<span class="q">${qLabel[x.q]}</span></div><h2>${esc(n)}</h2>${x.a?`<p class="addr">${esc(x.a)}</p>`:''}${blurb}${nearH}<div class="rides">${rides}</div><div class="actions">${maps}</div><div class="stella"><label for="pin">🍺 Stella 25 cl</label><span class="eur">€<input id="pin" type="text" inputmode="decimal" placeholder="?" value="${priceOf(n)!=null?priceOf(n).toFixed(2).replace('.',','):''}" aria-label="Prijs van een Stella in euro"></span><small id="prank">${rankText(n)}</small></div><div class="mine"><button class="btn${me.visited.has(n)?' on':''}" data-visit>${me.visited.has(n)?'✓ Bezocht':'Markeer als bezocht'}</button><button class="btn${me.fav.has(n)?' on':''}" data-fav>${me.fav.has(n)?'★ Favoriet':'☆ Favoriet'}</button></div><textarea id="note" rows="2" placeholder="Eigen notitie, bv. 'Westmalle getest, top'">${esc(me.notes[n]||'')}</textarea></div>`;
   card.hidden=false;const pin=card.querySelector('#pin');pin.onchange=()=>{const raw=pin.value.trim().replace(',','.').replace('€','');const v=parseFloat(raw);if(raw===''||isNaN(v)||v<=0||v>30){delete me.price[n];pin.value=''}else{me.price[n]=Math.round(v*100)/100;pin.value=me.price[n].toFixed(2).replace('.',',')}savePrice();card.querySelector('#prank').textContent=rankText(n);render()};pin.onkeydown=e=>{if(e.key==='Enter')pin.blur()};
   const ta=card.querySelector('#note');ta.oninput=()=>{const v=ta.value.trim();if(v)me.notes[n]=v;else delete me.notes[n];saveMe()};
-  if(fly)flyTo(x.lat,x.lon);else render()}
+  if(fly&&morphT===null)flyTo(x.lat,x.lon);else render()}
 card.addEventListener('click',e=>{e.stopPropagation();
   const cp=e.target.closest('[data-copy]');if(cp){const txt=cp.dataset.copy,done=()=>{cp.textContent='Gekopieerd ✓';setTimeout(()=>cp.textContent='Kopieer adres',1600)};
     const fb=()=>{const r=document.createRange(),sp=document.createElement('span');sp.textContent=txt;cp.after(sp);r.selectNodeContents(sp);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);cp.textContent='Selecteer en kopieer';setTimeout(()=>sp.remove(),6000)};
@@ -381,7 +401,10 @@ q.addEventListener('input',()=>{const v=norm(q.value.trim());if(!v){res.hidden=t
 res.addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b)return;res.hidden=true;q.value='';focusLine=null;syncChips();stopRide();pick(b.dataset.n,true);flyTo(st[b.dataset.n].lat,st[b.dataset.n].lon,900)});
 q.addEventListener('keydown',e=>{if(e.key==='Enter'){const b=res.querySelector('[data-n]');if(b)b.click()}if(e.key==='Escape'){res.hidden=true}});
 // pan & zoom
-function fit(){const a=svg.clientWidth/svg.clientHeight,cx=-100,cy=-250,h=a>1?4300:4300/Math.max(a,.45)*.62;view={w:h*a,h,x:cx-h*a/2,y:cy-h/2};render()}
+function fit(){const a=svg.clientWidth/svg.clientHeight;
+  if(morphT!==null){const ps=D.stations.flatMap(x=>[PPm[x.n],P(x.lat,x.lon)]),x0=Math.min(...ps.map(p=>p[0])),x1=Math.max(...ps.map(p=>p[0])),y0=Math.min(...ps.map(p=>p[1])),y1=Math.max(...ps.map(p=>p[1]));
+    const pad=1.12,top=svg.clientWidth<640?90:70,hh=Math.max((y1-y0)*pad,(x1-x0)*pad/a),h=hh*svg.clientHeight/(svg.clientHeight-top),w=h*a;view={w,h,x:(x0+x1)/2-w/2,y:(y0+y1)/2-h/2-(h-hh)/2};render();return}
+  const cx=-100,cy=-250,h=a>1?4300:4300/Math.max(a,.45)*.62;view={w:h*a,h,x:cx-h*a/2,y:cy-h/2};render()}
 function zoomAt(f,px,py){const r=svg.getBoundingClientRect();const mx=view.x+(px-r.left)/r.width*view.w,my=view.y+(py-r.top)/r.height*view.h;const w=Math.min(9000,Math.max(50,view.w*f)),h=w*view.h/view.w;view={x:mx-(mx-view.x)*w/view.w,y:my-(my-view.y)*h/view.h,w,h};render()}
 svg.addEventListener('wheel',e=>{e.preventDefault();cancelAnimationFrame(anim);zoomAt(e.deltaY>0?1.15:1/1.15,e.clientX,e.clientY)},{passive:false});
 const ptr=new Map();let pinch=0,moved=0,lastPT='touch';
@@ -397,7 +420,7 @@ svg.addEventListener('click',e=>{if(moved>4)return;untip();
   const tn=e.target.getAttribute&&e.target.getAttribute('data-n');
   if(tn){stopRide();pick(tn,true);return}
   let best=null,bd=(lastPT==='mouse'?16:30)*s;
-  D.stations.forEach(x=>{if(!x.l.some(active))return;const [cx,cy]=P(x.lat,x.lon),d=Math.hypot(cx-mx,cy-my);if(d<bd){bd=d;best=x.n}});
+  D.stations.forEach(x=>{if(!x.l.some(active))return;const [cx,cy]=pos(x),d=Math.hypot(cx-mx,cy-my);if(d<bd){bd=d;best=x.n}});
   if(best){stopRide();pick(best,true);return}
   const ln=e.target.getAttribute&&e.target.getAttribute('data-line');
   if(ln){showLine(ln);return}
@@ -408,5 +431,16 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!card.hidden)close(
 const lvBtns=[...document.querySelectorAll('.levels button')];
 const syncLv=()=>lvBtns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.sty===mapStyle));
 lvBtns.forEach(b=>b.onclick=e=>{e.stopPropagation();mapStyle=b.dataset.sty;try{localStorage.setItem('cafemap-style',mapStyle)}catch(_){}syncLv();drawBase();render()});syncLv();
+// tabs
+const tabBtns=[...document.querySelectorAll('.tabs button')],mp=document.getElementById('morph'),mt=document.getElementById('mt'),mplay=document.getElementById('mplay');
+let savedStyle=null,mAnim=null;
+function setTab(tab){tabBtns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===tab));cancelAnimationFrame(mAnim);stopRide();card.hidden=true;sel=null;
+  if(tab==='morph'){if(morphT===null){savedStyle=mapStyle;mapStyle='detail';drawBase()}morphT=+mt.value/1000;wrap.classList.add('morphing');mp.hidden=false}
+  else{morphT=null;wrap.classList.remove('morphing');mp.hidden=true;if(savedStyle){mapStyle=savedStyle;savedStyle=null;drawBase()}}
+  fit()}
+tabBtns.forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+mt.addEventListener('input',()=>{cancelAnimationFrame(mAnim);morphT=+mt.value/1000;mplay.textContent=morphT>=1?'↺ Terug':'▶ Speel af';render()});
+mplay.onclick=()=>{cancelAnimationFrame(mAnim);const from=morphT,to=morphT>=1?0:1,t0=performance.now(),dur=matchMedia('(prefers-reduced-motion: reduce)').matches?0:3200*Math.abs(to-from);
+  const step=t=>{const k=dur?Math.min(1,(t-t0)/dur):1;morphT=from+(to-from)*k;mt.value=Math.round(morphT*1000);render();if(k<1)mAnim=requestAnimationFrame(step);else mplay.textContent=to===1?'↺ Terug':'▶ Speel af'};mAnim=requestAnimationFrame(step)};
 fit();addEventListener('resize',fit);
 </script>

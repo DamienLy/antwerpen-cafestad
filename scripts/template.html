@@ -1,6 +1,6 @@
 <title>Antwerpen Caféstad Overlay</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&family=IM+Fell+English:ital@0;1&display=swap">
 <style>
 /* Layout: poster-style header, full-bleed map, floating preview card (bottom sheet on phones) */
 :root{--bg:#f6f4ef;--land:#eeeae1;--water:#b7d2e4;--road:#ddd6c6;--ring:#cdbd9f;--park:#cfe1c4;--square:#e4ded0;--street:#d2c8b2;--minor:#dcd5c6;--ped:#e6d6b8;--rail:#a59f95;--mainfill:#fffdf8;--maincase:#d3c3a2;--tfill:#faf7f0;--tcase:#d9d0bd;--fg:#1d2126;--muted:#686d74;--card:#ffffff;--line:#e2ddd2;--accent:#e2632a;--accent2:#c7283a;
@@ -93,6 +93,29 @@ svg:active{cursor:grabbing}
 .levels button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 @media (max-width:640px){.levels{top:auto;bottom:12px}#card:not([hidden])~.levels{display:none}}
 text{font-family:var(--body)}
+svg[data-style=chalk]{--land:#25322c;--water:#334c55;--park:#2e4236;--minor:rgba(240,236,225,.2);--ped:rgba(250,228,150,.38);--rail:rgba(240,236,225,.45);--mainfill:rgba(246,243,233,.82);--tfill:rgba(246,243,233,.5);--fg:#f4f1e8;--muted:#cfc9b8;--card:#25322c}
+svg[data-style=chalk] text{font-family:"Caveat",cursive;font-weight:700}
+#wrap[data-style=chalk]::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.55'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
+svg[data-style=pirate]{--land:#ecd8a8;--water:#9cc4bc;--park:#c2c98f;--minor:#cfae74;--ped:#b8894c;--rail:#7a5b3a;--mainfill:#f6e7bf;--maincase:#8a6234;--tfill:#f1dfb2;--tcase:#ad8752;--fg:#3b2412;--muted:#6e4c2b;--card:#f6e7bf;background:radial-gradient(ellipse at 50% 45%,#f3e2b6 0%,#e6cc93 62%,#c79f5f 100%)}
+svg[data-style=pirate] text{font-family:"IM Fell English",Georgia,serif}
+svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b2452;--ped:#5a2d6a;--rail:#2ee6ff;--mainfill:#ff4fae;--tfill:#9b7cff;--fg:#f7f2ff;--muted:#bcaef0;--card:#0d0a1a}
+.compass{background:none!important;position:absolute;left:max(14px,env(safe-area-inset-left,0px));top:58px;width:74px;height:74px;pointer-events:none;display:none;opacity:.85}
+#wrap[data-style=pirate] .compass{display:block}
+@media (max-width:640px){.compass{top:56px;width:58px;height:58px}}
+.stella{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--bg);font-size:.78rem}
+.stella label{font-weight:600}
+.stella .eur{display:flex;align-items:center;gap:3px;margin-left:auto}
+.stella input{width:58px;box-sizing:border-box;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:7px;padding:5px 6px;font:600 .85rem var(--body);text-align:right}
+.stella input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.stella small{color:var(--muted);font-size:.7rem;width:100%}
+.stella{flex-wrap:wrap}
+.prow{display:grid;grid-template-columns:24px 1fr auto;gap:8px;align-items:center;border:0;background:none;color:var(--fg);padding:5px 4px;border-radius:7px;cursor:pointer;font:.8rem var(--body);text-align:left;width:100%}
+.prow:hover{background:var(--land)}
+.prow b{font-variant-numeric:tabular-nums}
+.prow i{font-style:normal;color:var(--muted);font-size:.72rem;text-align:center}
+.prow small{color:var(--muted);font-size:.68rem;display:block}
+.plist{display:flex;flex-direction:column;max-height:300px;overflow:auto}
+#pimp{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:9px;padding:7px 9px;font:.75rem ui-monospace,monospace}
 </style>
 <header>
   <div class="top">
@@ -106,14 +129,14 @@ text{font-family:var(--body)}
     </div>
   </div>
   <div class="chips" id="chips"></div>
-  <div class="tools"><div class="chips" id="filters"></div><button class="tbtn" id="rnd">🎲 Verras me</button><button class="tbtn" id="tourBtn">Mijn tocht <b id="tourCount">0</b></button></div>
+  <div class="tools"><div class="chips" id="filters"></div><button class="tbtn" id="rnd">🎲 Verras me</button><button class="tbtn" id="priceBtn">🍺 Stella-index</button><button class="tbtn" id="tourBtn">Mijn tocht <b id="tourCount">0</b></button></div>
 </header>
 <div id="wrap">
   <svg id="map" role="img" aria-label="Kaart van Antwerpen met cafélijnen"></svg>
   <div id="tip"></div>
   <div id="card" hidden></div>
   <div class="key"><span><i class="dot"></i>adres gevonden</span><span><i class="dot g"></i>positie geschat</span><span>Kaart © OpenStreetMap-bijdragers</span></div>
-  <div class="levels" role="group" aria-label="Kaartstijl"><button data-lv="1">Rustig</button><button data-lv="2">Straten</button><button data-lv="3">Detail</button></div>
+  <div class="levels" role="group" aria-label="Kaartstijl"><button data-sty="detail">Detail</button><button data-sty="chalk">Krijtbord</button><button data-sty="pirate">Schatkaart</button><button data-sty="neon">Neon</button></div><svg class="compass" viewBox="-50 -50 100 100" aria-hidden="true"><circle r="44" fill="#f3e2b6" stroke="#6e4c2b" stroke-width="2"/><circle r="36" fill="none" stroke="#6e4c2b" stroke-width=".8" stroke-dasharray="2 3"/><path d="M0-40L7 0 0 40-7 0Z" fill="#6e4c2b"/><path d="M-40 0L0-7 40 0 0 7Z" fill="#a5804c"/><path d="M0-40L7 0H-7Z" fill="#b5332b"/><circle r="3" fill="#3b2412"/><text y="-28" text-anchor="middle" font-size="11" font-family="IM Fell English,serif" fill="#3b2412" font-weight="700">N</text></svg>
   <div class="zoom"><button id="zi" aria-label="Inzoomen">+</button><button id="zo" aria-label="Uitzoomen">−</button><button id="zf" aria-label="Hele kaart">⤢</button></div>
 </div>
 <script>
@@ -130,25 +153,47 @@ const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.set
 const gBase=el('g',{},svg), gLines=el('g',{},svg), gSt=el('g',{},svg), gLab=el('g',{},svg);
 const pts=a=>a.map(([la,lo])=>P(la,lo).join(',')).join(' ');
 const ns={'vector-effect':'non-scaling-stroke'};
-let mapLevel=3;try{mapLevel=+localStorage.getItem('cafemap-level2')||3}catch(_){}
+const STY={detail:1,chalk:1.3,pirate:1.12,neon:1};let mapStyle='detail',FM=1;try{const v=localStorage.getItem('cafemap-style');if(STY[v])mapStyle=v}catch(_){}
 function circ(la,lo,m){const [x,y]=P(la,lo);return {cx:x,cy:y,r:m*K/111200}}
 function drawBase(){
-  gBase.innerHTML='';const lv=mapLevel,O=B.osm,R='round';
+  gBase.innerHTML='';const O=B.osm,R='round',sy=mapStyle;FM=STY[sy];svg.dataset.style=sy;wrap.dataset.style=sy;
   const pth=(d,a)=>el('path',{d,fill:'none','stroke-linecap':R,'stroke-linejoin':R,...a,...ns},gBase);
-  pth(O.G,{fill:'var(--park)'});
-  pth(O.W,{fill:'var(--water)'});
-  if(lv>=2)pth(O.R,{stroke:'var(--minor)','stroke-width':lv>=3?1.6:1});
-  if(lv>=2)pth(O.P,{stroke:'var(--ped)','stroke-width':lv>=3?2.4:1.6});
-  pth(O.Z,{stroke:'var(--rail)','stroke-width':1.3,'stroke-dasharray':'5 3','stroke-linecap':'butt'});
-  if(lv>=2){pth(O.T,{stroke:'var(--tcase)','stroke-width':lv>=3?4.2:3.2});pth(O.T,{stroke:'var(--tfill)','stroke-width':lv>=3?2.6:1.8})}
-  pth(O.M,{stroke:'var(--maincase)','stroke-width':lv>=2?5.2:4});
-  pth(O.M,{stroke:'var(--mainfill)','stroke-width':lv>=2?3.4:2.4});
+  const W=v=>({style:`stroke-width:calc(var(--z,1) * ${v}px)`});
   const defs=el('defs',{},gBase);
-  if(lv>=3)O.N.forEach(([n,L,d],i)=>el('path',{id:'sn'+i,d},defs));
+  O.N.forEach(([n,L,d],i)=>el('path',{id:'sn'+i,d},defs));
+  const pat=el('pattern',{id:'waves',patternUnits:'userSpaceOnUse',width:80,height:40},defs);
+  el('path',{d:'M6 14q6-6 12 0t12 0M46 32q6-6 12 0t12 0',fill:'none',stroke:'#5d8d86','stroke-width':1.8,'stroke-linecap':'round'},pat);
+  const f=el('filter',{id:'glow',x:'-30%',y:'-30%',width:'160%',height:'160%'},defs);
+  el('feGaussianBlur',{stdDeviation:4,result:'b'},f);const mg=el('feMerge',{},f);el('feMergeNode',{in:'b'},mg);el('feMergeNode',{in:'SourceGraphic'},mg);
+  if(sy==='chalk'){
+    pth(O.G,{fill:'var(--park)',stroke:'rgba(240,236,225,.35)','stroke-width':1,'stroke-dasharray':'2 3'});
+    pth(O.W,{fill:'var(--water)',stroke:'rgba(240,236,225,.65)','stroke-width':1.4});
+    pth(O.R,{stroke:'var(--minor)',...W(1.3)});pth(O.P,{stroke:'var(--ped)',...W(1.8),'stroke-dasharray':'4 3'});
+    pth(O.Z,{stroke:'var(--rail)','stroke-width':1.2,'stroke-dasharray':'6 4'});
+    pth(O.T,{stroke:'var(--tfill)',...W(1.7)});pth(O.M,{stroke:'var(--mainfill)',...W(2.6)});
+  }else if(sy==='neon'){
+    pth(O.G,{fill:'var(--park)'});pth(O.W,{fill:'var(--water)',stroke:'#2ee6ff','stroke-width':1,'stroke-opacity':.55});
+    pth(O.R,{stroke:'var(--minor)',...W(1.1)});pth(O.P,{stroke:'var(--ped)',...W(1.4)});
+    pth(O.Z,{stroke:'var(--rail)','stroke-width':1,'stroke-opacity':.7,'stroke-dasharray':'4 4'});
+    pth(O.T,{stroke:'var(--tfill)','stroke-opacity':.75,...W(1)});
+    pth(O.M,{stroke:'#ff4fae','stroke-opacity':.18,...W(7)});pth(O.M,{stroke:'var(--mainfill)',...W(1.6)});
+  }else{
+    pth(O.G,{fill:'var(--park)',...(sy==='pirate'?{stroke:'#8f9a5c','stroke-width':1}:{})});
+    pth(O.W,{fill:'var(--water)',...(sy==='pirate'?{stroke:'#5d8d86','stroke-width':1.6}:{})});
+    if(sy==='pirate')pth(O.W,{fill:'url(#waves)'});
+    pth(O.R,{stroke:'var(--minor)',...W(1.5)});pth(O.P,{stroke:'var(--ped)',...W(2.2),...(sy==='pirate'?{'stroke-dasharray':'3 3'}:{})});
+    pth(O.Z,{stroke:'var(--rail)','stroke-width':1.3,'stroke-dasharray':sy==='pirate'?'1 4':'5 3','stroke-linecap':sy==='pirate'?R:'butt'});
+    pth(O.T,{stroke:'var(--tcase)',...W(4)});pth(O.T,{stroke:'var(--tfill)',...W(2.5)});
+    pth(O.M,{stroke:'var(--maincase)',...W(5.2)});pth(O.M,{stroke:'var(--mainfill)',...W(3.4)});
+  }
+  if(sy==='neon')gLines.setAttribute('filter','url(#glow)');else gLines.removeAttribute('filter');
 }
 drawBase();
 const scale=()=>view.w/svg.clientWidth;
 const active=id=>on[id]&&(!focusLine||focusLine===id);
+const DARK_FIX={'#000':'#f4f1e8'};
+function lc(c){if(mapStyle!=='chalk'&&mapStyle!=='neon')return c;const h=c.replace('#','');const f=h.length===3?h.split('').map(x=>x+x).join(''):h;const r=parseInt(f.slice(0,2),16),g=parseInt(f.slice(2,4),16),b=parseInt(f.slice(4,6),16),L=(.299*r+.587*g+.114*b)/255;
+  if(L>.32)return c;if(L<.12)return mapStyle==='neon'?'#e9e4ff':'#f4f1e8';const k=.42;return '#'+[r,g,b].map(v=>Math.round(v+(255-v)*k).toString(16).padStart(2,'0')).join('')}
 function drawLines(){
   gLines.innerHTML='';const s=scale(),n=D.lines.length;
   D.lines.forEach((l,i)=>{
@@ -157,20 +202,21 @@ function drawLines(){
     const q=p.map((c,j)=>{const a=p[Math.max(0,j-1)],b=p[Math.min(p.length-1,j+1)];const dx=b[0]-a[0],dy=b[1]-a[1],m=Math.hypot(dx,dy)||1;return [c[0]-dy/m*off,c[1]+dx/m*off]});
     const dim=sel&&!st[sel].l.includes(l.id);
     const w=focusLine?5:3.2;
-    const pl=el('polyline',{points:q.map(c=>c.join(',')).join(' '),fill:'none',stroke:l.c,'stroke-width':w,'stroke-linejoin':'round','stroke-linecap':'round',opacity:dim?.15:.93,...ns},gLines);
+    const pl=el('polyline',{points:q.map(c=>c.join(',')).join(' '),fill:'none',stroke:lc(l.c),'stroke-width':w,'stroke-linejoin':'round','stroke-linecap':'round',opacity:dim?.15:.93,...ns},gLines);
     const hit=el('polyline',{points:pl.getAttribute('points'),fill:'none',stroke:'transparent','stroke-width':10,'data-line':l.id,...ns},gLines);
     hit.style.cursor='pointer';
     hit.addEventListener('pointerenter',e=>tip(e,'Lijn '+names[l.id]));hit.addEventListener('pointerleave',untip);
   });
 }
+const PIR={Linkeroever:'Hier zijn draken',Schelde:'De Grote Schelde',Eilandje:'Piratennest',Centrum:'Oude Stad'};
 function drawStations(){
   gSt.innerHTML='';gLab.innerHTML='';const s=scale();
-  if(mapLevel>=2)B.poi.forEach(([t,la,lo])=>{const [x,y]=P(la,lo);el('rect',{x:x-2.6*s,y:y-2.6*s,width:5.2*s,height:5.2*s,rx:1*s,fill:'var(--muted)',opacity:.7,'pointer-events':'none'},gLab);if(mapLevel>=3||s<1.2){const e=el('text',{x:x+5*s,y:y+3*s,'font-size':8.5*s,'font-style':'italic',fill:'var(--muted)',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);e.textContent=t}});
-  if(mapLevel>=3&&s<2.2){let c=0;const vx0=view.x,vy0=view.y,vx1=view.x+view.w,vy1=view.y+view.h,fs=7.5*s;
-    B.osm.N.forEach(([n,L,d,bb],i)=>{if(c>70||bb[2]<vx0||bb[0]>vx1||bb[3]<vy0||bb[1]>vy1)return;if(L<n.length*fs*.62+30*s)return;c++;
+  B.poi.forEach(([t,la,lo])=>{const [x,y]=P(la,lo);el('rect',{x:x-2.6*s,y:y-2.6*s,width:5.2*s,height:5.2*s,rx:1*s,fill:'var(--muted)',opacity:.7,'pointer-events':'none'},gLab);if(s<1.6){const e=el('text',{x:x+5*s,y:y+3*s,'font-size':8.5*s*FM,'font-style':'italic',fill:'var(--muted)',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);e.textContent=t}});
+  if(s<2.2){let c=0;const vx0=view.x,vy0=view.y,vx1=view.x+view.w,vy1=view.y+view.h,fs=Math.min(12.5,Math.max(10,8.6+1.3/s))*s*FM;
+    B.osm.N.forEach(([n,L,d,bb],i)=>{if(c>80||bb[2]<vx0||bb[0]>vx1||bb[3]<vy0||bb[1]>vy1)return;if(L<n.length*fs*.58+24*s)return;c++;
       const e=el('text',{'font-size':fs,fill:'var(--muted)',dy:2.6*s,'letter-spacing':'.03em','pointer-events':'none',stroke:'var(--land)','stroke-width':2.4*s,'paint-order':'stroke'},gLab);
       const tp=el('textPath',{href:'#sn'+i,startOffset:'50%','text-anchor':'middle'},e);tp.textContent=n})}
-  B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?13:9.5)*s,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);e.textContent=k==='area'?t.toUpperCase():t});
+  B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?13:9.5)*s*FM,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);const tt=mapStyle==='pirate'&&PIR[t]||t;e.textContent=k==='area'&&mapStyle!=='pirate'&&mapStyle!=='chalk'?tt.toUpperCase():tt});
   D.stations.forEach(x=>{
     if(!x.l.some(active))return;
     const [cx,cy]=P(x.lat,x.lon),big=x.h||focusLine,r=(x.n===sel?7:big?5.6:3.6)*s,ok=passF(x);
@@ -179,14 +225,15 @@ function drawStations(){
     if(x.n===sel)el('circle',{cx,cy,r:r,fill:'var(--accent2)',class:'pulse'},gSt);
     const c=el('circle',{cx,cy,r,fill:x.n===sel?'var(--accent2)':me.visited.has(x.n)?'var(--fg)':'var(--card)',stroke:'var(--fg)','stroke-width':x.h?2.2:1.4,...ns},gSt);
     if(x.q==='geschat')c.setAttribute('stroke-dasharray','2 2');
-    if(me.fav.has(x.n)){const st2=el('text',{x:cx,y:cy-r-2.5*s,'font-size':10*s,'text-anchor':'middle',fill:'#e8a317',stroke:'var(--land)','stroke-width':2*s,'paint-order':'stroke','pointer-events':'none'},gSt);st2.textContent='★'}
+    if(me.fav.has(x.n)){const st2=el('text',{x:cx,y:cy-r-2.5*s,'font-size':10*s*FM,'text-anchor':'middle',fill:'#e8a317',stroke:'var(--land)','stroke-width':2*s,'paint-order':'stroke','pointer-events':'none'},gSt);st2.textContent='★'}
     const hit=el('circle',{cx,cy,r:Math.max(r,12*s),fill:'transparent','data-n':x.n},gSt);
     hit.style.cursor='pointer';
     hit.addEventListener('pointerenter',e=>tip(e,x.n));hit.addEventListener('pointerleave',untip);
-    if(x.h||focusLine||s<1.5||sel===x.n){const t=el('text',{x:cx+r+3*s,y:cy+3.5*s,'font-size':(x.h||sel===x.n?11.5:9.5)*s,'font-weight':x.h||sel===x.n?700:500,fill:'var(--fg)',stroke:'var(--land)','stroke-width':3.2*s,'paint-order':'stroke','data-n':x.n},gLab);t.style.cursor='pointer';t.textContent=x.n}
+    if(x.h||focusLine||s<1.5||sel===x.n){const t=el('text',{x:cx+r+3*s,y:cy+3.5*s,'font-size':(x.h||sel===x.n?11.5:9.5)*s*FM,'font-weight':x.h||sel===x.n?700:500,fill:'var(--fg)',stroke:'var(--land)','stroke-width':3.2*s,'paint-order':'stroke','data-n':x.n},gLab);t.style.cursor='pointer';t.textContent=x.n}
+    const pr=priceOf(x.n);if(pr!=null&&(priceMode||sel===x.n)){const w=26*s*FM,h=12*s*FM,bx=cx-w/2,by=cy+r+2.5*s;el('rect',{x:bx,y:by,width:w,height:h,rx:h/2,fill:priceColor(pr),'pointer-events':'none'},gLab);const pt=el('text',{x:cx,y:by+h*.74,'font-size':8.5*s*FM,'font-weight':700,'text-anchor':'middle',fill:'#fff','pointer-events':'none'},gLab);pt.textContent=eur(pr)}
   });
 }
-function render(){svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);drawLines();drawStations()}
+function render(){svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);const s=scale();svg.style.setProperty('--z',Math.min(2.6,Math.max(1,Math.sqrt(1.1/s))).toFixed(2));const gb=svg.querySelector('#glow feGaussianBlur');if(gb)gb.setAttribute('stdDeviation',(3.5*s).toFixed(2));drawLines();drawStations()}
 const tipEl=document.getElementById('tip');
 function tip(e,t){if(e.pointerType==='touch')return;const r=wrap.getBoundingClientRect();tipEl.textContent=t;tipEl.style.left=(e.clientX-r.left)+'px';tipEl.style.top=(e.clientY-r.top)+'px';tipEl.style.opacity=1}
 function untip(){tipEl.style.opacity=0}
@@ -202,7 +249,15 @@ function flyTo(lat,lon,w){const [tx,ty]=P(lat,lon);const tw=w||Math.min(view.w,1
 const store={get(k,d){try{return JSON.parse(localStorage.getItem('cafemap-'+k))??d}catch(_){return d}},set(k,v){try{localStorage.setItem('cafemap-'+k,JSON.stringify(v))}catch(_){}}};
 const me={visited:new Set(store.get('visited',[])),fav:new Set(store.get('fav',[])),notes:store.get('notes',{})};
 const saveMe=()=>{store.set('visited',[...me.visited]);store.set('fav',[...me.fav]);store.set('notes',me.notes)};
-const FILTERS={terras:'Terras',muziek:'Live muziek',bier:'Bier',cocktails:'Cocktails',laat:'Laat open',eten:'Eten',student:'Student',fav:'★ Favorieten',todo:'Nog niet bezocht'};
+me.price=store.get('price',{});let priceMode=store.get('pricemode',false);
+const savePrice=()=>store.set('price',me.price);
+const priceOf=n=>{const v=me.price[n]??(st[n]&&st[n].p);return v==null?null:+v};
+const eur=v=>'€'+v.toFixed(2).replace('.',',');
+const priced=()=>D.stations.filter(x=>priceOf(x.n)!=null).sort((a,b)=>priceOf(a.n)-priceOf(b.n)||a.n.localeCompare(b.n));
+function priceColor(v){const ps=priced().map(x=>priceOf(x.n));if(ps.length<2)return '#2f8f4e';const lo=ps[0],hi=ps[ps.length-1],k=hi>lo?(v-lo)/(hi-lo):0;const c=[[47,143,78],[214,160,30],[199,40,58]];const i=k<.5?0:1,f=k<.5?k*2:(k-.5)*2,a=c[i],b=c[i+1];return `rgb(${a.map((x,j)=>Math.round(x+(b[j]-x)*f)).join(',')})`}
+function rankText(n){const v=priceOf(n);if(v==null)return 'Nog geen prijs. Vul in wat een Stella hier kost.';const ps=priced(),i=ps.findIndex(x=>x.n===n),avg=ps.reduce((a,x)=>a+priceOf(x.n),0)/ps.length;
+  return ps.length<2?'Je eerste prijs. Hoe meer cafés je invult, hoe beter de ranking.':(i===0?'🏆 Goedkoopste ':'#'+(i+1)+' ')+'van '+ps.length+' cafés met prijs · gemiddeld '+eur(avg)}
+const FILTERS={terras:'Terras',muziek:'Live muziek',bier:'Bier',cocktails:'Cocktails',laat:'Laat open',fav:'★ Favorieten',todo:'Nog niet bezocht'};
 const activeF=new Set();
 const passF=x=>[...activeF].every(f=>f==='fav'?me.fav.has(x.n):f==='todo'?!me.visited.has(x.n):(x.f||[]).includes(f));
 // card
@@ -232,8 +287,9 @@ function pick(n,fly){sel=n;const x=st[n];
   const nearH=near.length?`<div class="near"><span>In de buurt</span>${near.map(([o,d])=>`<button data-go="${esc(o.n)}">${esc(o.n)}<small>${fmtD(d)}</small></button>`).join('')}</div>`:'';
   const qq=encodeURIComponent(n+' '+x.a.split(' (')[0]+' Antwerpen'), aq=encodeURIComponent(x.a?x.a.split(' (')[0]+', Antwerpen, België':'');
   const maps=x.a?`<a class="btn primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=${qq}">Google Maps ↗</a><a class="btn" target="_blank" rel="noopener noreferrer" href="https://maps.apple.com/?q=${encodeURIComponent(n)}&address=${aq}">Apple Kaarten ↗</a><button class="btn" data-copy="${esc(x.a.split(' (')[0]+', Antwerpen')}">Kopieer adres</button>`:'';
-  card.innerHTML=`<div class="band">${band}</div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">${x.b?esc(x.b):'Onbekend adres'}${x.h?' · knooppunt':''}<span class="q">${qLabel[x.q]}</span></div><h2>${esc(n)}</h2>${x.a?`<p class="addr">${esc(x.a)}</p>`:''}${blurb}${nearH}<div class="rides">${rides}</div><div class="actions">${maps}</div><div class="mine"><button class="btn${me.visited.has(n)?' on':''}" data-visit>${me.visited.has(n)?'✓ Bezocht':'Markeer als bezocht'}</button><button class="btn${me.fav.has(n)?' on':''}" data-fav>${me.fav.has(n)?'★ Favoriet':'☆ Favoriet'}</button></div><textarea id="note" rows="2" placeholder="Eigen notitie, bv. 'Westmalle getest, top'">${esc(me.notes[n]||'')}</textarea></div>`;
-  card.hidden=false;const ta=card.querySelector('#note');ta.oninput=()=>{const v=ta.value.trim();if(v)me.notes[n]=v;else delete me.notes[n];saveMe()};
+  card.innerHTML=`<div class="band">${band}</div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">${x.b?esc(x.b):'Onbekend adres'}${x.h?' · knooppunt':''}<span class="q">${qLabel[x.q]}</span></div><h2>${esc(n)}</h2>${x.a?`<p class="addr">${esc(x.a)}</p>`:''}${blurb}${nearH}<div class="rides">${rides}</div><div class="actions">${maps}</div><div class="stella"><label for="pin">🍺 Stella 25 cl</label><span class="eur">€<input id="pin" type="text" inputmode="decimal" placeholder="?" value="${priceOf(n)!=null?priceOf(n).toFixed(2).replace('.',','):''}" aria-label="Prijs van een Stella in euro"></span><small id="prank">${rankText(n)}</small></div><div class="mine"><button class="btn${me.visited.has(n)?' on':''}" data-visit>${me.visited.has(n)?'✓ Bezocht':'Markeer als bezocht'}</button><button class="btn${me.fav.has(n)?' on':''}" data-fav>${me.fav.has(n)?'★ Favoriet':'☆ Favoriet'}</button></div><textarea id="note" rows="2" placeholder="Eigen notitie, bv. 'Westmalle getest, top'">${esc(me.notes[n]||'')}</textarea></div>`;
+  card.hidden=false;const pin=card.querySelector('#pin');pin.onchange=()=>{const raw=pin.value.trim().replace(',','.').replace('€','');const v=parseFloat(raw);if(raw===''||isNaN(v)||v<=0||v>30){delete me.price[n];pin.value=''}else{me.price[n]=Math.round(v*100)/100;pin.value=me.price[n].toFixed(2).replace('.',',')}savePrice();card.querySelector('#prank').textContent=rankText(n);render()};pin.onkeydown=e=>{if(e.key==='Enter')pin.blur()};
+  const ta=card.querySelector('#note');ta.oninput=()=>{const v=ta.value.trim();if(v)me.notes[n]=v;else delete me.notes[n];saveMe()};
   if(fly)flyTo(x.lat,x.lon);else render()}
 card.addEventListener('click',e=>{e.stopPropagation();
   const cp=e.target.closest('[data-copy]');if(cp){const txt=cp.dataset.copy,done=()=>{cp.textContent='Gekopieerd ✓';setTimeout(()=>cp.textContent='Kopieer adres',1600)};
@@ -275,6 +331,25 @@ document.getElementById('tourBtn').onclick=()=>{stopRide();sel=null;
   card.innerHTML=`<div class="band">${D.lines.map(l=>`<i style="background:${l.c}"></i>`).join('')}</div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">Stempelkaart<span class="q">${me.visited.size} van ${D.stations.length} cafés</span></div><h2>Mijn tocht</h2><div class="tour">${rows}</div><div class="near"><span>Favorieten</span>${favs}</div><p class="addr">Je vinkjes, favorieten en notities worden alleen in deze browser bewaard.</p></div>`;
   card.hidden=false;render()};
 updTour();
+// stella index
+function showPrices(){stopRide();sel=null;const ps=priced(),todo=D.stations.length-ps.length;
+  const rows=ps.map((x,i)=>`<button class="prow" data-go="${esc(x.n)}"><i>${i===0?'🏆':i+1}</i><span>${esc(x.n)}<small>${esc(x.b||'')}</small></span><b style="color:${priceColor(priceOf(x.n))}">${eur(priceOf(x.n))}</b></button>`).join('');
+  const avg=ps.length?ps.reduce((a,x)=>a+priceOf(x.n),0)/ps.length:0;
+  card.innerHTML=`<div class="band"><i style="background:#2f8f4e"></i><i style="background:#d6a01e"></i><i style="background:#c7283a"></i></div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">Ranking<span class="q">${ps.length} van ${D.stations.length} cafés</span></div><h2>Stella-index</h2>
+  ${ps.length?`<p class="addr">Goedkoopste eerst · gemiddeld ${eur(avg)}${ps.length>1?' · verschil '+eur(priceOf(ps[ps.length-1].n)-priceOf(ps[0].n)):''}</p><div class="plist">${rows}</div>`:`<p class="blurb">Nog geen prijzen. Tik een café aan en vul onderaan in wat een Stella er kost. Dan verschijnt hier de ranking, van goedkoopst naar duurst.</p>`}
+  <div class="actions"><button class="btn${priceMode?' on':''}" data-pmode>${priceMode?'✓ Prijzen op kaart':'Toon prijzen op kaart'}</button>${ps.length?'<button class="btn" data-pexp>Kopieer mijn prijzen</button>':''}<button class="btn" data-pimp>Plak prijzen</button></div>
+  <div id="pbox" hidden><textarea id="pimp" rows="3" placeholder="Plak hier prijzen die iemand anders kopieerde"></textarea><div class="actions" style="margin-top:6px"><button class="btn primary" data-pdo>Voeg toe</button></div></div>
+  <p class="addr">${todo} cafés hebben nog geen prijs. Prijzen worden in deze browser bewaard; deel ze met "Kopieer mijn prijzen".</p></div>`;
+  card.hidden=false;render()}
+document.getElementById('priceBtn').onclick=showPrices;
+card.addEventListener('click',e=>{
+  if(e.target.closest('[data-pmode]')){e.stopImmediatePropagation();priceMode=!priceMode;store.set('pricemode',priceMode);showPrices();return}
+  const ex=e.target.closest('[data-pexp]');if(ex){e.stopImmediatePropagation();const obj={};priced().forEach(x=>obj[x.n]=priceOf(x.n));const txt='STELLA '+JSON.stringify(obj);
+    const ok=()=>{ex.textContent='Gekopieerd ✓';setTimeout(()=>ex.textContent='Kopieer mijn prijzen',1600)};try{navigator.clipboard.writeText(txt).then(ok,()=>{const b=card.querySelector('#pbox');b.hidden=false;const ta=b.querySelector('#pimp');ta.value=txt;ta.select()})}catch(_){}return}
+  if(e.target.closest('[data-pimp]')){e.stopImmediatePropagation();const b=card.querySelector('#pbox');b.hidden=!b.hidden;if(!b.hidden)b.querySelector('#pimp').focus();return}
+  if(e.target.closest('[data-pdo]')){e.stopImmediatePropagation();const raw=card.querySelector('#pimp').value;let n=0;try{const o=JSON.parse(raw.slice(raw.indexOf('{')));for(const k in o){const v=+o[k];if(st[k]&&v>0&&v<30){me.price[k]=Math.round(v*100)/100;n++}}}catch(_){}
+    savePrice();showPrices();const p=card.querySelector('.addr:last-child');if(p)p.textContent=n?n+' prijzen toegevoegd.':'Niets herkend. Plak de volledige tekst die met STELLA begint.';return}
+},true);
 // search
 const q=document.getElementById('q'),res=document.getElementById('results');
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ']/g,'');
@@ -309,7 +384,7 @@ const ctr=f=>{const r=svg.getBoundingClientRect();zoomAt(f,r.left+r.width/2,r.to
 document.getElementById('zi').onclick=()=>ctr(1/1.4);document.getElementById('zo').onclick=()=>ctr(1.4);document.getElementById('zf').onclick=fit;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!card.hidden)close()});
 const lvBtns=[...document.querySelectorAll('.levels button')];
-const syncLv=()=>lvBtns.forEach(b=>b.setAttribute('aria-pressed',+b.dataset.lv===mapLevel));
-lvBtns.forEach(b=>b.onclick=e=>{e.stopPropagation();mapLevel=+b.dataset.lv;try{localStorage.setItem('cafemap-level2',mapLevel)}catch(_){}syncLv();drawBase();render()});syncLv();
+const syncLv=()=>lvBtns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.sty===mapStyle));
+lvBtns.forEach(b=>b.onclick=e=>{e.stopPropagation();mapStyle=b.dataset.sty;try{localStorage.setItem('cafemap-style',mapStyle)}catch(_){}syncLv();drawBase();render()});syncLv();
 fit();addEventListener('resize',fit);
 </script>

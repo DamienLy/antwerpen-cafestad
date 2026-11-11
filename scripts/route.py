@@ -63,7 +63,7 @@ d = json.load(open('data.json'))
 st = {s['n']: s for s in d['stations']}
 for s in d['stations']:
     sp = P(s['lat'], s['lon'])
-    E = list(G.edges)
+    E = [e for e in G.edges if e[0][0] != 'S' and e[1][0] != 'S']
     A = np.array([coord[u] for u, v in E]); Bv = np.array([coord[v] for u, v in E])
     D = Bv - A; L2 = (D ** 2).sum(1); L2[L2 == 0] = 1e-9
     t = np.clip(((np.array(sp) - A) * D).sum(1) / L2, 0, 1)
@@ -77,51 +77,75 @@ for s in d['stations']:
     sn = ('S', s['n']); coord[sn] = sp
     G.add_edge(sn, att, w=math.dist(sp, coord[att]) * 3 + 1, f=3)   # costly, so no other line cuts through a café
 
-# route each line, café to café
+# attach points; cafés far from any street keep their own node in the line
+attach = {n: next(iter(G[('S', n)])) for n in st}
+far = {n for n, a in attach.items() if math.dist(coord[('S', n)], coord[a]) > 25}
+links = {n: [round(coord[a][0], 1), round(coord[a][1], 1)] for n, a in attach.items() if 4 < math.dist(coord[('S', n)], coord[a]) and n not in far}
+end = lambda n: ('S', n) if n in far else attach[n]
+for n in st:   # cafés are not through-roads
+    if n not in far: G.remove_node(('S', n))
+
 order = {l['id']: i for i, l in enumerate(d['lines'])}
-seqs, detours = {}, []
-for l in d['lines']:
-    path = [('S', l['s'][0])]
-    for a, b in zip(l['s'], l['s'][1:]):
-        sa, sb = ('S', a), ('S', b)
-        p = nx.shortest_path(G, sa, sb, weight='w')
-        straight = math.dist(coord[sa], coord[sb])
-        routed = sum(math.dist(coord[x], coord[y]) for x, y in zip(p, p[1:]))
-        if routed > 1.5 * straight + 100:
-            p = [sa, sb]; detours.append((l['id'], a, b))
-        path += p[1:]
-    seqs[l['id']] = path
+canon = lambda u, v: (u, v) if str(u) < str(v) else (v, u)
+
+def route_all(bonus):
+    """route every line; edges already used by other lines are cheaper (bundling)"""
+    edges, detours = {}, []
+    for l in d['lines']:
+        lid = l['id']; E = set()
+        def w(u, v, a):
+            k = canon(u, v); others = len(bonus.get(k, set()) - {lid})
+            return a['w'] * (0.55 if others else 1.0)
+        for a, b in zip(l['s'], l['s'][1:]):
+            na, nb = end(a), end(b)
+            if na == nb: continue
+            p = nx.shortest_path(G, na, nb, weight=w)
+            straight = math.dist(coord[na], coord[nb])
+            routed = sum(math.dist(coord[x], coord[y]) for x, y in zip(p, p[1:]))
+            if routed > 1.5 * straight + 100: p = [na, nb]; detours.append((lid, a, b))
+            for u, v in zip(p, p[1:]): E.add(canon(u, v))
+        edges[lid] = E
+    return edges, detours
+
+edges, _ = route_all({})
+for it in range(3):
+    use = {}
+    for lid, E in edges.items():
+        for e in E: use.setdefault(e, set()).add(lid)
+    edges, detours = route_all(use)
 print('omwegen vervangen door rechte lijn:', len(detours))
 
-# street-only paths: the café itself is left out, so lines never pinch towards a café; a thin link is drawn instead
-attach = {}
-for n in st:
-    sn = ('S', n); att = next(iter(G[sn]))
-    attach[n] = att
-far = {n for n, a in attach.items() if math.dist(coord[('S', n)], coord[a]) > 25}   # no street close by: the line itself goes to the café
-links = {n: [round(coord[a][0], 1), round(coord[a][1], 1)] for n, a in attach.items() if 4 < math.dist(coord[('S', n)], coord[a]) and n not in far}
-for l in d['lines']:
-    path = [x for x in seqs[l['id']] if x[0] != 'S' or x[1] in far]
-    path = [x for j, x in enumerate(path) if j == 0 or x != path[j - 1]]
-    mine = {attach[n] for n in l['s']}
-    changed = True
-    while changed:
-        changed = False
-        for j in range(1, len(path) - 1):
-            if path[j - 1] == path[j + 1] and path[j] not in mine:
-                del path[j:j + 2]; changed = True; break
-    seqs[l['id']] = path
-
-canon = lambda u, v: (u, v) if str(u) < str(v) else (v, u)
 users = {}
-for lid, path in seqs.items():
-    for u, v in zip(path, path[1:]):
-        users.setdefault(canon(u, v), set()).add(lid)
+for lid, E in edges.items():
+    for e in E: users.setdefault(e, set()).add(lid)
+
+def chains(E):
+    """split a line's edge set into polylines that run from junction/end to junction/end"""
+    adj = {}
+    for u, v in E: adj.setdefault(u, []).append(v); adj.setdefault(v, []).append(u)
+    used = set(); out = []
+    stops = [n for n, nb in adj.items() if len(nb) != 2]
+    def walk(a, b):
+        ch = [a, b]; used.add(canon(a, b))
+        while len(adj[ch[-1]]) == 2:
+            nxt = [x for x in adj[ch[-1]] if canon(ch[-1], x) not in used]
+            if not nxt: break
+            used.add(canon(ch[-1], nxt[0])); ch.append(nxt[0])
+        return ch
+    for a in stops:
+        for b in adj[a]:
+            if canon(a, b) not in used: out.append(walk(a, b))
+    for u, v in E:   # pure loops
+        if canon(u, v) not in used: out.append(walk(u, v))
+    return out, {n for n, nb in adj.items() if len(nb) > 2}
+
+def slot_of(lid, u, v):
+    us = sorted(users[canon(u, v)], key=order.get); sl = us.index(lid) - (len(us) - 1) / 2
+    return sl if (u, v) == canon(u, v) else -sl
 
 def steady(ch, min_len=90):
-    """remove short slot excursions so bundles do not wobble"""
     for _ in range(4):
-        runs = []  # [start_idx, end_idx(exclusive segments), slot, length]
+        runs = []
         for j in range(len(ch) - 1):
             L = math.dist(ch[j][:2], ch[j + 1][:2])
             if runs and runs[-1][2] == ch[j][2]: runs[-1][1] = j + 1; runs[-1][3] += L
@@ -138,33 +162,38 @@ def steady(ch, min_len=90):
     return ch
 
 out = {}
-for lid, path in seqs.items():
-    seen = set(); chunks = []; cur = []
-    for u, v in zip(path, path[1:]):
-        c = canon(u, v)
-        if c in seen:
-            if cur: chunks.append(cur); cur = []
-            continue
-        seen.add(c)
-        us = sorted(users[c], key=order.get); slot = us.index(lid) - (len(us) - 1) / 2
-        if (u, v) != c: slot = -slot
-        if not cur: cur.append([*coord[u], slot, 0])
-        else: cur[-1][2] = slot
-        cur.append([*coord[v], 0, 0])
-    if cur: chunks.append(cur)
-    clean = []
-    for ch in chunks:
-        if len(ch) > 2: ch = steady(ch)
-        if len(ch) > 1: ch[-1][2] = ch[-2][2]
-        keep = [ch[0]]
-        for j in range(1, len(ch) - 1):
-            a, b, c2 = keep[-1], ch[j], ch[j + 1]
+for l in d['lines']:
+    lid = l['id']; chs, junc = chains(edges[lid])
+    # one shared slot per junction of this line, so every chain ending there meets at the same point
+    jslot = {}
+    for ch in sorted(chs, key=lambda c: -sum(math.dist(coord[a], coord[b]) for a, b in zip(c, c[1:]))):
+        for end_i, nb_i in ((0, 1), (-1, -2)):
+            n = ch[end_i]
+            if n in junc and n not in jslot: jslot[n] = (ch[end_i], ch[nb_i])
+    res = []
+    for ch in chs:
+        pts = []
+        for j, u in enumerate(ch):
+            sl = slot_of(lid, u, ch[j + 1]) if j < len(ch) - 1 else 0
+            pts.append([*coord[u], sl, 0])
+        if len(pts) > 2: pts = steady(pts)
+        pts[-1][2] = pts[-2][2]
+        # junction anchors: [x, y, slot, 0] of the reference edge at that node, as extra end info
+        anchors = []
+        for end_i in (0, -1):
+            n = ch[end_i]
+            if n in jslot:
+                a, b = jslot[n]; anchors.append([round(coord[b][0] - coord[a][0], 2), round(coord[b][1] - coord[a][1], 2), slot_of(lid, a, b)])
+            else: anchors.append(None)
+        keep = [pts[0]]
+        for j in range(1, len(pts) - 1):
+            a, b, c2 = keep[-1], pts[j], pts[j + 1]
             if b[2] != a[2]: keep.append(b); continue
             dx, dy = c2[0] - a[0], c2[1] - a[1]; L = math.hypot(dx, dy) or 1
             if abs(dy * b[0] - dx * b[1] + c2[0] * a[1] - c2[1] * a[0]) / L > 1.5: keep.append(b)
-        keep.append(ch[-1])
-        clean.append([[round(p[0], 1), round(p[1], 1), p[2], 0] for p in keep])
-    out[lid] = clean
+        keep.append(pts[-1])
+        res.append({'p': [[round(p[0], 1), round(p[1], 1), p[2]] for p in keep], 'a': anchors})
+    out[lid] = res
 json.dump({'lines': out, 'links': links}, open('routes.json', 'w'), separators=(',', ':'))
-print('links', len(links), 'ver van een straat:', sorted(far))
+print('ketens per lijn', {k: len(v) for k, v in out.items()}, 'links', len(links), 'ver:', sorted(far))
 print('gedeelde straatstukken', sum(1 for v in users.values() if len(v) > 1), 'van', len(users))

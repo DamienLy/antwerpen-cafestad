@@ -275,14 +275,17 @@ function offsetSegs(pts,offs){const n=pts.length;if(n<2)return pts;const N=[];fo
     const a=N[j-1],b=N[j],oa=offs[j-1],ob=offs[j];if(Math.abs(oa-ob)<1e-9){let mx=a[0]+b[0],my=a[1]+b[1];const ml=Math.hypot(mx,my);if(ml<1e-6){out.push([p[0]+a[0]*oa,p[1]+a[1]*oa]);continue}mx/=ml;my/=ml;const k=oa/Math.max(mx*a[0]+my*a[1],.4);out.push([p[0]+mx*k,p[1]+my*k])}
     else{out.push([p[0]+a[0]*oa,p[1]+a[1]*oa]);out.push([p[0]+b[0]*ob,p[1]+b[1]*ob])}}return out}
 // street-following lines: offset each segment by its slot, ramp between slots, then round the corners
-function ribbon(ch,gap,ramp){const n=ch.length,out=[];if(n<2)return ch.map(p=>[p[0],p[1],1]);
+function ribbon(ch,gap,ramp,anc){const n=ch.length,out=[];if(n<2)return ch.map(p=>[p[0],p[1],1]);
   const N=[],U=[],Lg=[];for(let j=0;j<n-1;j++){const dx=ch[j+1][0]-ch[j][0],dy=ch[j+1][1]-ch[j][1],m=Math.hypot(dx,dy)||1;N.push([-dy/m,dx/m]);U.push([dx/m,dy/m]);Lg.push(m)}
   const o=j=>ch[j][2]*gap;
-  for(let j=0;j<n;j++){const p=ch[j],fx=p[3]?1:0;
-    if(j===0){out.push([p[0]+N[0][0]*o(0),p[1]+N[0][1]*o(0),fx]);continue}
-    if(j===n-1){const k=n-2;out.push([p[0]+N.at(k)[0]*o(k),p[1]+N.at(k)[1]*o(k),fx]);continue}
+  const anchor=(p,a)=>{const m=Math.hypot(a[0],a[1])||1;return [p[0]-a[1]/m*a[2]*gap,p[1]+a[0]/m*a[2]*gap,1]};
+  for(let j=0;j<n;j++){const p=ch[j];
+    if(j===0){const own=[p[0]+N[0][0]*o(0),p[1]+N[0][1]*o(0),1];const A=anc&&anc[0]?anchor(p,anc[0]):null;
+      if(A&&Math.hypot(A[0]-own[0],A[1]-own[1])>.3){const t=Math.min(ramp,Lg[0]*.45);out.push(A);out.push([p[0]+U[0][0]*t+N[0][0]*o(0),p[1]+U[0][1]*t+N[0][1]*o(0),0])}else out.push(own);continue}
+    if(j===n-1){const k=n-2,own=[p[0]+N[k][0]*o(k),p[1]+N[k][1]*o(k),1];const A=anc&&anc[1]?anchor(p,anc[1]):null;
+      if(A&&Math.hypot(A[0]-own[0],A[1]-own[1])>.3){const t=Math.min(ramp,Lg[k]*.45);out.push([p[0]-U[k][0]*t+N[k][0]*o(k),p[1]-U[k][1]*t+N[k][1]*o(k),0]);out.push(A)}else out.push(own);continue}
     const oa=o(j-1),ob=o(j),a=N[j-1],b=N[j];
-    if(Math.abs(oa-ob)<1e-9){let mx=a[0]+b[0],my=a[1]+b[1];const ml=Math.hypot(mx,my);if(ml<1e-6){out.push([p[0]+a[0]*oa,p[1]+a[1]*oa,fx]);continue}mx/=ml;my/=ml;const k=oa/Math.max(mx*a[0]+my*a[1],.5);out.push([p[0]+mx*k,p[1]+my*k,fx])}
+    if(Math.abs(oa-ob)<1e-9){let mx=a[0]+b[0],my=a[1]+b[1];const ml=Math.hypot(mx,my);if(ml<1e-6){out.push([p[0]+a[0]*oa,p[1]+a[1]*oa,0]);continue}mx/=ml;my/=ml;const k=oa/Math.max(mx*a[0]+my*a[1],.5);out.push([p[0]+mx*k,p[1]+my*k,0])}
     else{const ta=Math.min(ramp,Lg[j-1]*.45),tb=Math.min(ramp,Lg[j]*.45),ua=U[j-1],ub=U[j];
       out.push([p[0]-ua[0]*ta+a[0]*oa,p[1]-ua[1]*ta+a[1]*oa,0]);out.push([p[0]+ub[0]*tb+b[0]*ob,p[1]+ub[1]*tb+b[1]*ob,0])}}
   return out}
@@ -299,7 +302,7 @@ function drawLines(){
     if(!active(l.id))return;
     const s0l=scale(),w=(focusLine?5:fancy?4.6-2*Math.min(1,Math.max(0,(s0l-1)/2)):3.2)*Math.pow(ZF,.8),gap=(w+1.2)*s;
     const off=focusLine?0:(i-(n-1)/2)*(fancy?gap*.5:2.2*s);let p=l.s.map(x=>pos(st[x])),q,d='';
-    if(mode==='straat'&&B.routes&&B.routes.lines[l.id]){d=B.routes.lines[l.id].map(ch=>{const q2=chaikin(ribbon(ch,focusLine?0:gap,gap*4),2);return 'M'+q2.map(c=>c[0].toFixed(1)+' '+c[1].toFixed(1)).join('L')}).join('')}
+    if(mode==='straat'&&B.routes&&B.routes.lines[l.id]){d=B.routes.lines[l.id].map(ch=>{const q2=chaikin(ribbon(ch.p,focusLine?0:gap,gap*4,ch.a),2);return 'M'+q2.map(c=>c[0].toFixed(1)+' '+c[1].toFixed(1)).join('L')}).join('')}
     else if(mode==='metro'){const m=[p[0]];for(let j=0;j<p.length-1;j++){const a=p[j],b=p[j+1],dx=b[0]-a[0],dy=b[1]-a[1],k=Math.min(Math.abs(dx),Math.abs(dy));if(k>2)m.push([a[0]+Math.sign(dx)*k,a[1]+Math.sign(dy)*k]);m.push(b)}p=m;q=offsetSegs(p,p.slice(1).map(()=>off))}
     else q=p.map((c,j)=>{const a=p[Math.max(0,j-1)],b=p[Math.min(p.length-1,j+1)];const dx=b[0]-a[0],dy=b[1]-a[1],m=Math.hypot(dx,dy)||1;return [c[0]-dy/m*off,c[1]+dx/m*off]});
     if(!d)d=mode==='glad'?smoothD(q):'M'+q.map(c=>c[0].toFixed(1)+' '+c[1].toFixed(1)).join('L');
@@ -311,8 +314,8 @@ function drawLines(){
     hit.addEventListener('pointerenter',e=>tip(e,'Lijn '+names[l.id]));hit.addEventListener('pointerleave',untip);
   });
 }
-const PIR={Linkeroever:'Hier zijn draken',Schelde:'Zee der Verloren Pinten',Eilandje:'Smokkelaarsdokken',Centrum:'Kroegenkust',Zuid:'Kaap Zuyd',Seefhoek:'Rumhoek',Borgerhout:'Boekaniersbaai',Zurenborg:'Fort Zurenborgh',Berchem:'Bandietenberg','Stadspark':'Schateiland','Park Spoor Noord':'Wrakkenveld',Leien:'Kapersweg','Ring R1':'De Zeeslangring',
- Kathedraal:'Uitkijktoren','Het Steen':'Piratenburcht',MAS:'Schatkamer','Centraal Station':'Grote Ankerplaats',Zoo:'Beestenschip',KMSKA:'Buitkamer',Rubenshuis:'Kapiteinshuis',Boerentoren:'Kraaiennest',Justitiepaleis:'Galgenpaleis',Vleeshuis:'Provianthuis','Plantin-Moretus':'Kaartenmakerij',Opera:'Zeemansopera','Station Berchem':'Kleine Ankerplaats',Permeke:'Logboekenhuis','Sint-Pauluskerk':'Zeemanskerk'};
+const PIR={Linkeroever:'Drakenoever',Schelde:'De Bierstroom',Eilandje:'Kapersdok',Centrum:'Kroegenkust',Zuid:'Zuiderkaap',Seefhoek:'Rumkwartier',Borgerhout:'Boekaniersbaai',Zurenborg:'Zurenburcht',Berchem:'Berchemburcht',Stadspark:'Schateiland','Park Spoor Noord':'Kapers Uitval',Leien:'Kapersweg','Ring R1':'De Zeeslangring',
+ Kathedraal:'Uitkijktoren der Antwerpen','Het Steen':'Oeverkasteel',MAS:'Schathorde','Centraal Station':'Grote Ankerplaats',Zoo:'Ark der Beesten',KMSKA:'Kunstkaap',Rubenshuis:'Kapiteinshuis',Boerentoren:'Kraaiennest',Justitiepaleis:'Galgenpaleis',Vleeshuis:'Provianthuis','Plantin-Moretus':'Kaartendrukker',Opera:'Shanty','Station Berchem':'Kleine Ankerplaats',Permeke:'Huis der geheugen','Sint-Pauluskerk':'Zeemanskerk',Waaslandtunnel:'Smokkelaarstunnel'};
 const pirN=t=>mapStyle==='pirate'&&PIR[t]||t;
 function drawStations(){
   gSt.innerHTML='';gLab.innerHTML='';const s0=scale(),s=s0*ZF,geo=morphT===null||ease(morphT)>.6,posterish=morphT!==null&&ease(morphT)<.15&&s0<6;

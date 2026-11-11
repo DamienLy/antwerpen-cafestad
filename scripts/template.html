@@ -98,10 +98,13 @@ svg[data-style=chalk] text{font-family:"Caveat",cursive;font-weight:700}
 #wrap[data-style=chalk]::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.55'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
 svg[data-style=pirate]{--land:#ecd8a8;--water:#9cc4bc;--park:#c2c98f;--minor:#cfae74;--ped:#b8894c;--rail:#7a5b3a;--mainfill:#f6e7bf;--maincase:#8a6234;--tfill:#f1dfb2;--tcase:#ad8752;--fg:#3b2412;--muted:#6e4c2b;--card:#f6e7bf;background:radial-gradient(ellipse at 50% 45%,#f3e2b6 0%,#e6cc93 62%,#c79f5f 100%)}
 svg[data-style=pirate] text{font-family:"IM Fell English",Georgia,serif}
+svg[data-style=pirate]{--water:#a9cbbf;--maincase:#5a3a1c;--tcase:#8a6234;--minor:#c6a066}
 svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b2452;--ped:#5a2d6a;--rail:#2ee6ff;--mainfill:#ff4fae;--tfill:#9b7cff;--fg:#f7f2ff;--muted:#bcaef0;--card:#0d0a1a}
-.compass{background:none!important;position:absolute;left:max(14px,env(safe-area-inset-left,0px));top:58px;width:74px;height:74px;pointer-events:none;display:none;opacity:.85}
-#wrap[data-style=pirate] .compass{display:block}
-@media (max-width:640px){.compass{top:56px;width:58px;height:58px}}
+.cartouche{display:none;position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:52px;pointer-events:none;background:#f3e2b6;color:#3b2412;border:4px double #6e4c2b;border-radius:3px;padding:7px 16px 8px;font-family:"IM Fell English",Georgia,serif;text-align:center;box-shadow:0 4px 14px rgba(70,40,10,.35);flex-direction:column;gap:1px}
+.cartouche b{font-size:1.15rem;letter-spacing:.04em}.cartouche span{font-style:italic;font-size:.82rem}.cartouche i{font-size:.7rem;color:#8a3a22;margin-top:2px}
+#wrap[data-style=pirate] .cartouche{display:flex}
+@media (max-width:640px){#wrap[data-style=pirate] .cartouche{display:none}}
+#wrap[data-style=pirate]::before{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;box-shadow:inset 0 0 110px 34px rgba(120,66,18,.55),inset 0 0 22px 6px rgba(70,35,8,.65);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .32 0 0 0 0 .12 0 0 0 .9 -.32'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)'/%3E%3C/svg%3E")}
 .stella{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--bg);font-size:.78rem}
 .stella label{font-weight:600}
 .stella .eur{display:flex;align-items:center;gap:3px;margin-left:auto}
@@ -136,7 +139,7 @@ svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b24
   <div id="tip"></div>
   <div id="card" hidden></div>
   <div class="key"><span><i class="dot"></i>adres gevonden</span><span><i class="dot g"></i>positie geschat</span><span>Kaart © OpenStreetMap-bijdragers</span></div>
-  <div class="levels" role="group" aria-label="Kaartstijl"><button data-sty="detail">Detail</button><button data-sty="chalk">Krijtbord</button><button data-sty="pirate">Schatkaart</button><button data-sty="neon">Neon</button></div><svg class="compass" viewBox="-50 -50 100 100" aria-hidden="true"><circle r="44" fill="#f3e2b6" stroke="#6e4c2b" stroke-width="2"/><circle r="36" fill="none" stroke="#6e4c2b" stroke-width=".8" stroke-dasharray="2 3"/><path d="M0-40L7 0 0 40-7 0Z" fill="#6e4c2b"/><path d="M-40 0L0-7 40 0 0 7Z" fill="#a5804c"/><path d="M0-40L7 0H-7Z" fill="#b5332b"/><circle r="3" fill="#3b2412"/><text y="-28" text-anchor="middle" font-size="11" font-family="IM Fell English,serif" fill="#3b2412" font-weight="700">N</text></svg>
+  <div class="levels" role="group" aria-label="Kaartstijl"><button data-sty="detail">Detail</button><button data-sty="chalk">Krijtbord</button><button data-sty="pirate">Schatkaart</button><button data-sty="neon">Neon</button></div><div class="cartouche" aria-hidden="true"><b>Caerte der Herberghen</b><span>van de vermaerde Stadt Antwerpen</span><i>✕ = goedkoopste pint · Anno 2026</i></div>
   <div class="zoom"><button id="zi" aria-label="Inzoomen">+</button><button id="zo" aria-label="Uitzoomen">−</button><button id="zf" aria-label="Hele kaart">⤢</button></div>
 </div>
 <script>
@@ -155,6 +158,22 @@ const pts=a=>a.map(([la,lo])=>P(la,lo).join(',')).join(' ');
 const ns={'vector-effect':'non-scaling-stroke'};
 const STY={detail:1,chalk:1.3,pirate:1.12,neon:1};let mapStyle='detail',FM=1;try{const v=localStorage.getItem('cafemap-style');if(STY[v])mapStyle=v}catch(_){}
 function circ(la,lo,m){const [x,y]=P(la,lo);return {cx:x,cy:y,r:m*K/111200}}
+const ROSE='<circle r="44" fill="#f3e2b6" stroke="#5a3a1c" stroke-width="2"/><circle r="38" fill="none" stroke="#5a3a1c" stroke-width=".7"/><circle r="30" fill="none" stroke="#5a3a1c" stroke-width=".6" stroke-dasharray="1.5 2.5"/><path d="M0-42L5 0 0 42-5 0ZM-42 0L0-5 42 0 0 5Z" fill="#a5804c" transform="rotate(45)"/><path d="M0-42L7 0 0 42-7 0Z" fill="#5a3a1c"/><path d="M-42 0L0-7 42 0 0 7Z" fill="#7a5532"/><path d="M0-42L7 0H-7Z" fill="#b5332b"/><circle r="3.5" fill="#f3e2b6" stroke="#5a3a1c"/><g font-family="IM Fell English,serif" font-size="9" fill="#3b2412" text-anchor="middle" font-weight="700"><text y="-47">N</text><text y="54">Z</text><text x="51" y="3">O</text><text x="-51" y="3">W</text></g>';
+const SERPENT='<path d="M-200 14q22-8 44 0t44 0t44 0t44 0t44 0t44 0t44 0t44 0t44 0" fill="none" stroke="#3f6f69" stroke-width="2.5"/><g fill="#6f8f55" stroke="#2f2412" stroke-width="2.5" stroke-linejoin="round"><path d="M-170 10q-20-34-48-18q16 2 22 18z"/><path d="M-150 10q28-62 56 0z"/><path d="M-70 10q30-70 60 0z"/><path d="M14 10q22-80 58-74q40 6 52 30q-18 2-30-6q-4 12-18 12q-16 0-22 38z"/></g><circle cx="88" cy="-48" r="4" fill="#2f2412"/><path d="M118 -40l22 6-20 6" fill="none" stroke="#b5332b" stroke-width="2.5"/><path d="M-130 -10l4-14 4 14M-50-14l4-16 4 16M40-50l6-14 2 16" fill="none" stroke="#2f2412" stroke-width="2"/>';
+const SHIP='<path d="M-90 20q60 10 120 0t120 0" fill="none" stroke="#3f6f69" stroke-width="2.5"/><g stroke="#2f2412" stroke-width="2.5" stroke-linejoin="round"><path d="M-70 0h140l-24 26h-92z" fill="#7a5532"/><path d="M-70 0l-14-12h14zM70 0l14-16h-14z" fill="#7a5532"/><path d="M-20 0v-96M28 0v-80M60 0v-40" fill="none"/><path d="M-20-90q34 22 0 44zM-20-42q40 18 0 38zM28-74q28 18 0 36zM28-34q32 14 0 30z" fill="#f6ead0"/><path d="M-20-96l22 6-22 6z" fill="#b5332b"/></g><circle cx="-38" cy="12" r="3" fill="#2f2412"/><circle cx="-14" cy="12" r="3" fill="#2f2412"/><circle cx="10" cy="12" r="3" fill="#2f2412"/>';
+function pirateDeco(O,defs){
+  const g=el('g',{'pointer-events':'none'},gBase);
+  const cp=el('clipPath',{id:'wclip'},defs);el('path',{d:O.W},cp);
+  const rg=el('g',{'clip-path':'url(#wclip)'},g);
+  [[96,'#4f7f78',.55],[92,'var(--water)',1],[60,'#4f7f78',.6],[56,'var(--water)',1],[30,'#4f7f78',.7],[26,'var(--water)',1]].forEach(([w,c,o])=>el('path',{d:O.W,fill:'none',stroke:c,'stroke-opacity':o,'stroke-width':w,'stroke-linejoin':'round'},rg));
+  el('path',{d:O.W,fill:'url(#waves)'},rg);
+  const rx=-2800,ry=-100;let d='';for(let i=0;i<32;i++){const a=i*Math.PI/16;d+=`M${rx} ${ry}l${Math.round(Math.cos(a)*14000)} ${Math.round(Math.sin(a)*14000)}`}
+  el('path',{d,stroke:'#6e4c2b','stroke-opacity':.28,'stroke-width':.8,fill:'none',...ns},g);
+  const put=(svgs,tr)=>{const e=el('g',{transform:tr},g);e.innerHTML=svgs};
+  put(ROSE,`translate(${rx} ${ry}) scale(6)`);
+  put(SERPENT,'translate(-2400 -2480) rotate(24) scale(1.7)');
+  put(SHIP,'translate(-1620 170) scale(1.5)');
+}
 function drawBase(){
   gBase.innerHTML='';const O=B.osm,R='round',sy=mapStyle;FM=STY[sy];svg.dataset.style=sy;wrap.dataset.style=sy;
   const pth=(d,a)=>el('path',{d,fill:'none','stroke-linecap':R,'stroke-linejoin':R,...a,...ns},gBase);
@@ -180,12 +199,12 @@ function drawBase(){
   }else{
     pth(O.G,{fill:'var(--park)',...(sy==='pirate'?{stroke:'#8f9a5c','stroke-width':1}:{})});
     pth(O.W,{fill:'var(--water)',...(sy==='pirate'?{stroke:'#5d8d86','stroke-width':1.6}:{})});
-    if(sy==='pirate')pth(O.W,{fill:'url(#waves)'});
     pth(O.R,{stroke:'var(--minor)',...W(1.5)});pth(O.P,{stroke:'var(--ped)',...W(2.2),...(sy==='pirate'?{'stroke-dasharray':'3 3'}:{})});
     pth(O.Z,{stroke:'var(--rail)','stroke-width':1.3,'stroke-dasharray':sy==='pirate'?'1 4':'5 3','stroke-linecap':sy==='pirate'?R:'butt'});
     pth(O.T,{stroke:'var(--tcase)',...W(4)});pth(O.T,{stroke:'var(--tfill)',...W(2.5)});
     pth(O.M,{stroke:'var(--maincase)',...W(5.2)});pth(O.M,{stroke:'var(--mainfill)',...W(3.4)});
   }
+  if(sy==='pirate')pirateDeco(O,defs);
   if(sy==='neon')gLines.setAttribute('filter','url(#glow)');else gLines.removeAttribute('filter');
 }
 drawBase();
@@ -201,22 +220,23 @@ function drawLines(){
     const off=focusLine?0:(i-(n-1)/2)*2.2*s,p=l.s.map(x=>P(st[x].lat,st[x].lon));
     const q=p.map((c,j)=>{const a=p[Math.max(0,j-1)],b=p[Math.min(p.length-1,j+1)];const dx=b[0]-a[0],dy=b[1]-a[1],m=Math.hypot(dx,dy)||1;return [c[0]-dy/m*off,c[1]+dx/m*off]});
     const dim=sel&&!st[sel].l.includes(l.id);
-    const w=focusLine?5:3.2;
-    const pl=el('polyline',{points:q.map(c=>c.join(',')).join(' '),fill:'none',stroke:lc(l.c),'stroke-width':w,'stroke-linejoin':'round','stroke-linecap':'round',opacity:dim?.15:.93,...ns},gLines);
+    const w=(focusLine?5:3.2)*Math.pow(ZF,.8);
+    const pl=el('polyline',{points:q.map(c=>c.join(',')).join(' '),fill:'none',stroke:lc(l.c),...(mapStyle==='pirate'&&!focusLine?{'stroke-dasharray':'9 5'}:{}),'stroke-width':w,'stroke-linejoin':'round','stroke-linecap':'round',opacity:dim?.15:.93,...ns},gLines);
     const hit=el('polyline',{points:pl.getAttribute('points'),fill:'none',stroke:'transparent','stroke-width':10,'data-line':l.id,...ns},gLines);
     hit.style.cursor='pointer';
     hit.addEventListener('pointerenter',e=>tip(e,'Lijn '+names[l.id]));hit.addEventListener('pointerleave',untip);
   });
 }
-const PIR={Linkeroever:'Hier zijn draken',Schelde:'De Grote Schelde',Eilandje:'Piratennest',Centrum:'Oude Stad'};
+const PIR={Linkeroever:'Hier zijn draken',Schelde:'De Grote Schelde',Eilandje:'Piratennest',Centrum:'Oude Stadt',Zuid:'Zuyd',Seefhoek:'Seefhoeck',Borgerhout:'Borgerhoudt',Zurenborg:'Zurenborgh',Stadspark:'Stadtspark'};
 function drawStations(){
-  gSt.innerHTML='';gLab.innerHTML='';const s=scale();
-  B.poi.forEach(([t,la,lo])=>{const [x,y]=P(la,lo);el('rect',{x:x-2.6*s,y:y-2.6*s,width:5.2*s,height:5.2*s,rx:1*s,fill:'var(--muted)',opacity:.7,'pointer-events':'none'},gLab);if(s<1.6){const e=el('text',{x:x+5*s,y:y+3*s,'font-size':8.5*s*FM,'font-style':'italic',fill:'var(--muted)',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);e.textContent=t}});
-  if(s<2.2){let c=0;const vx0=view.x,vy0=view.y,vx1=view.x+view.w,vy1=view.y+view.h,fs=Math.min(12.5,Math.max(10,8.6+1.3/s))*s*FM;
+  gSt.innerHTML='';gLab.innerHTML='';const s0=scale(),s=s0*ZF;
+  B.poi.forEach(([t,la,lo])=>{const [x,y]=P(la,lo);el('rect',{x:x-2.6*s,y:y-2.6*s,width:5.2*s,height:5.2*s,rx:1*s,fill:'var(--muted)',opacity:.7,'pointer-events':'none'},gLab);if(s0<1.6){const e=el('text',{x:x+5*s,y:y+3*s,'font-size':8.5*s*FM,'font-style':'italic',fill:'var(--muted)',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);e.textContent=t}});
+  if(s0<2.2){let c=0;const vx0=view.x,vy0=view.y,vx1=view.x+view.w,vy1=view.y+view.h,fs=9.8*s*FM;
     B.osm.N.forEach(([n,L,d,bb],i)=>{if(c>80||bb[2]<vx0||bb[0]>vx1||bb[3]<vy0||bb[1]>vy1)return;if(L<n.length*fs*.58+24*s)return;c++;
       const e=el('text',{'font-size':fs,fill:'var(--muted)',dy:2.6*s,'letter-spacing':'.03em','pointer-events':'none',stroke:'var(--land)','stroke-width':2.4*s,'paint-order':'stroke'},gLab);
       const tp=el('textPath',{href:'#sn'+i,startOffset:'50%','text-anchor':'middle'},e);tp.textContent=n})}
-  B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?13:9.5)*s*FM,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);const tt=mapStyle==='pirate'&&PIR[t]||t;e.textContent=k==='area'&&mapStyle!=='pirate'&&mapStyle!=='chalk'?tt.toUpperCase():tt});
+  B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?(mapStyle==='pirate'?16:13):9.5)*s0*FM,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);const tt=mapStyle==='pirate'&&PIR[t]||t;e.textContent=k==='area'&&mapStyle!=='pirate'&&mapStyle!=='chalk'?tt.toUpperCase():tt});
+  const cheapest=mapStyle==='pirate'&&priced().length?priced()[0].n:null;
   D.stations.forEach(x=>{
     if(!x.l.some(active))return;
     const [cx,cy]=P(x.lat,x.lon),big=x.h||focusLine,r=(x.n===sel?7:big?5.6:3.6)*s,ok=passF(x);
@@ -229,11 +249,13 @@ function drawStations(){
     const hit=el('circle',{cx,cy,r:Math.max(r,12*s),fill:'transparent','data-n':x.n},gSt);
     hit.style.cursor='pointer';
     hit.addEventListener('pointerenter',e=>tip(e,x.n));hit.addEventListener('pointerleave',untip);
-    if(x.h||focusLine||s<1.5||sel===x.n){const t=el('text',{x:cx+r+3*s,y:cy+3.5*s,'font-size':(x.h||sel===x.n?11.5:9.5)*s*FM,'font-weight':x.h||sel===x.n?700:500,fill:'var(--fg)',stroke:'var(--land)','stroke-width':3.2*s,'paint-order':'stroke','data-n':x.n},gLab);t.style.cursor='pointer';t.textContent=x.n}
+    if(x.h||focusLine||s0<1.5||sel===x.n){const t=el('text',{x:cx+r+3*s,y:cy+3.5*s,'font-size':(x.h||sel===x.n?11.5:9.5)*s*FM,'font-weight':x.h||sel===x.n?700:500,fill:'var(--fg)',stroke:'var(--land)','stroke-width':3.2*s,'paint-order':'stroke','data-n':x.n},gLab);t.style.cursor='pointer';t.textContent=x.n}
+    if(mapStyle==='pirate'&&cheapest===x.n){const k=11*s;el('path',{d:`M${cx-k} ${cy-k}L${cx+k} ${cy+k}M${cx+k} ${cy-k}L${cx-k} ${cy+k}`,stroke:'#b5332b','stroke-width':4.5*Math.pow(ZF,.6),'stroke-linecap':'round',fill:'none','pointer-events':'none',...ns},gSt);const xt=el('text',{x:cx,y:cy-k-5*s,'font-size':10*s*FM,'text-anchor':'middle','font-style':'italic',fill:'#b5332b',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);xt.textContent='goedkoopste pint'}
     const pr=priceOf(x.n);if(pr!=null&&(priceMode||sel===x.n)){const w=26*s*FM,h=12*s*FM,bx=cx-w/2,by=cy+r+2.5*s;el('rect',{x:bx,y:by,width:w,height:h,rx:h/2,fill:priceColor(pr),'pointer-events':'none'},gLab);const pt=el('text',{x:cx,y:by+h*.74,'font-size':8.5*s*FM,'font-weight':700,'text-anchor':'middle',fill:'#fff','pointer-events':'none'},gLab);pt.textContent=eur(pr)}
   });
 }
-function render(){svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);const s=scale();svg.style.setProperty('--z',Math.min(2.6,Math.max(1,Math.sqrt(1.1/s))).toFixed(2));const gb=svg.querySelector('#glow feGaussianBlur');if(gb)gb.setAttribute('stdDeviation',(3.5*s).toFixed(2));drawLines();drawStations()}
+let ZF=1;
+function render(){svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);const s=scale();ZF=Math.min(2.4,Math.max(1,Math.pow(1.3/s,.55)));svg.style.setProperty('--z',Math.min(3.2,Math.max(1,Math.pow(1.3/s,.65))).toFixed(2));const wp=svg.querySelector('#waves');if(wp)wp.setAttribute('patternTransform',`scale(${Math.max(.3,Math.min(1,s/3)).toFixed(3)})`);const gb=svg.querySelector('#glow feGaussianBlur');if(gb)gb.setAttribute('stdDeviation',(3.5*s).toFixed(2));drawLines();drawStations()}
 const tipEl=document.getElementById('tip');
 function tip(e,t){if(e.pointerType==='touch')return;const r=wrap.getBoundingClientRect();tipEl.textContent=t;tipEl.style.left=(e.clientX-r.left)+'px';tipEl.style.top=(e.clientY-r.top)+'px';tipEl.style.opacity=1}
 function untip(){tipEl.style.opacity=0}

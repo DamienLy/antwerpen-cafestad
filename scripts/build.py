@@ -63,16 +63,20 @@ base["poi"] = [["Kathedraal",51.2203,4.4015],["Het Steen",51.2227,4.3972],["MAS"
 base["labels"] = [l for l in base["labels"] if l[3] != "poi" or l[0] in ("Stadspark","Park Spoor Noord","Leien","Ring R1")]
 
 base['osm'] = json.load(open('osm.json'))
+import os
+if os.path.exists('routes.json'): base['routes'] = json.load(open('routes.json'))
+if os.environ.get('PREVIEW'): base['preview'] = True
 for k in ('river','docks','parks','leien','ring','rail','meir','main','minor','squares'): base.pop(k, None)
 html = open('template.html').read().replace('__DATA__', json.dumps(d, ensure_ascii=False)).replace('__BASE__', json.dumps(base))
-open('antwerpen-cafestad.html','w').write(html)
+OUT = os.environ.get('OUT', 'antwerpen-cafestad.html')
+open(OUT,'w').write(html)
 SITE='https://damienly.github.io/antwerpen-cafestad/'
 head=('<!doctype html><html lang="nl"><head><meta charset="utf-8">'
  '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
  '<meta name="theme-color" content="#f6f4ef"><meta name="apple-mobile-web-app-capable" content="yes">'
- '<meta name="apple-mobile-web-app-title" content="Caféstad">'
+ '<meta name="apple-mobile-web-app-title" content="Cafékaart">'
  '<meta name="description" content="De 138 cafés van de Antwerpen-caféstad-poster op de echte kaart.">'
- '<meta property="og:title" content="Antwerpen caféstad"><meta property="og:description" content="De metrokaart van de poster op de echte stad: 12 lijnen, 138 cafés.">'
+ '<meta property="og:title" content="Cafékaart Antwerpen"><meta property="og:description" content="De metrokaart van de poster op de echte stad: 12 lijnen, 138 cafés.">'
  f'<meta property="og:image" content="{SITE}preview.png"><meta property="og:url" content="{SITE}"><meta property="og:type" content="website">'
  '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8D%BA%3C/text%3E%3C/svg%3E">'
  '</head><body>')

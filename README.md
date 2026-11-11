@@ -1,4 +1,4 @@
-# Antwerpen caféstad
+# Cafékaart Antwerpen
 
 **👉 Open de kaart: https://damienly.github.io/antwerpen-cafestad/**
 
@@ -8,6 +8,7 @@ De metrokaart-poster "Antwerpen caféstad" (12 lijnen, 138 cafés) op de echte s
 
 - **Kaart:** tik een café voor een korte uitleg, het adres, cafés in de buurt en een knop naar Google Maps of Apple Kaarten.
 - **Poster ↔ kaart:** tabblad bovenaan. Schuif of druk op "Speel af" en zie de cafés van hun plek op de poster naar hun echte adres bewegen.
+- **Lijnen langs de straten:** elke lijn volgt de echte straten tussen de cafés; waar lijnen dezelfde straat delen, lopen ze naast elkaar als tramsporen.
 - **Kaartstijlen:** Detail, Krijtbord, Schatkaart en Neon.
 - **Stella-index:** vul per café de prijs van een Stella in en zie welk café het goedkoopst is. Prijzen deel je met "Kopieer mijn prijzen" en "Plak prijzen".
 - **Mijn tocht:** vink bezochte cafés af, kies favorieten en schrijf notities. Dit wordt alleen op je eigen toestel bewaard.

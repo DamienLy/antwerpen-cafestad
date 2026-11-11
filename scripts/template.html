@@ -1,4 +1,4 @@
-<title>Antwerpen Caféstad Overlay</title>
+<title>Cafékaart Antwerpen</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&family=IM+Fell+English:ital@0;1&display=swap">
 <style>
@@ -127,7 +127,13 @@ text{font-family:var(--body)}
 .tabs button[aria-pressed="true"]{background:var(--accent);color:#fff}
 .tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 #morph{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 24px));box-sizing:border-box;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
-#morph[hidden]{display:none}
+#morph[hidden],#lmode[hidden]{display:none}
+#lmode{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:2px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 6px;box-shadow:var(--shadow);max-width:calc(100% - 24px);overflow-x:auto}
+#lmode .ml{font:600 .72rem var(--body);color:var(--muted);padding:0 6px}
+#lmode button{border:0;background:none;color:var(--muted);font:600 .78rem var(--body);padding:7px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}
+#lmode button[aria-pressed="true"]{background:var(--fg);color:var(--card)}
+#wrap.morphing #lmode{display:none}
+@media (max-width:640px){#lmode{left:12px;right:12px;transform:none}}
 #morph input{flex:1;min-width:0;accent-color:var(--accent)}
 #morph .ml{font:600 .72rem var(--body);color:var(--muted);white-space:nowrap}
 #mplay{white-space:nowrap}
@@ -163,7 +169,7 @@ svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b24
 <header>
   <div class="top">
     <div>
-      <h1>Antwerpen <span>caféstad</span></h1><nav class="tabs" aria-label="Weergave"><button data-tab="map" aria-pressed="true">Kaart</button><button data-tab="morph" aria-pressed="false">Poster ↔ kaart</button></nav>
+      <h1>Cafékaart <span>Antwerpen</span></h1><nav class="tabs" aria-label="Weergave"><button data-tab="map" aria-pressed="true">Kaart</button><button data-tab="morph" aria-pressed="false">Poster ↔ kaart</button></nav>
       <p class="sub">De metrokaart van de poster, op de echte stad gelegd. Tik een café, filter, of laat je verrassen.</p>
     </div>
     <div class="search">
@@ -179,6 +185,7 @@ svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b24
   <div id="tip"></div>
   <div id="card" hidden></div>
   <div class="key"><span><i class="dot"></i>adres gevonden</span><span><i class="dot g"></i>positie geschat</span><span>Kaart © OpenStreetMap-bijdragers</span></div>
+  <div id="lmode" hidden><span class="ml">Lijnen</span><button data-lm="nu">Nu</button><button data-lm="glad">Vloeiend</button><button data-lm="straat">Langs de straten</button><button data-lm="metro">Metrohoeken</button></div>
   <div id="morph" hidden><button id="mplay" class="btn primary">▶ Speel af</button><span class="ml">Poster</span><input id="mt" type="range" min="0" max="1000" value="0" aria-label="Van poster naar echte kaart"><span class="ml">Echte kaart</span></div>
   <div class="levels" role="group" aria-label="Kaartstijl"><button data-sty="detail">Detail</button><button data-sty="chalk">Krijtbord</button><button data-sty="pirate">Schatkaart</button><button data-sty="neon">Neon</button></div><div class="cartouche" aria-hidden="true"><b>Caerte der Herberghen</b><span>van de vermaerde Stadt Antwerpen</span><i>✕ = goedkoopste pint · Anno 2026</i></div>
   <div class="zoom"><button id="zi" aria-label="Inzoomen">+</button><button id="zo" aria-label="Uitzoomen">−</button><button id="zf" aria-label="Hele kaart">⤢</button></div>
@@ -260,18 +267,46 @@ drawBase();
 const scale=()=>view.w/svg.clientWidth;
 const active=id=>on[id]&&(!focusLine||focusLine===id);
 const DARK_FIX={'#000':'#f4f1e8'};
-function lc(c){if(mapStyle!=='chalk'&&mapStyle!=='neon')return c;const h=c.replace('#','');const f=h.length===3?h.split('').map(x=>x+x).join(''):h;const r=parseInt(f.slice(0,2),16),g=parseInt(f.slice(2,4),16),b=parseInt(f.slice(4,6),16),L=(.299*r+.587*g+.114*b)/255;
+function lc(c){const darkUI=mapStyle==='detail'&&matchMedia('(prefers-color-scheme: dark)').matches&&document.documentElement.dataset.theme!=='light';if(mapStyle!=='chalk'&&mapStyle!=='neon'&&!darkUI)return c;const h=c.replace('#','');const f=h.length===3?h.split('').map(x=>x+x).join(''):h;const r=parseInt(f.slice(0,2),16),g=parseInt(f.slice(2,4),16),b=parseInt(f.slice(4,6),16),L=(.299*r+.587*g+.114*b)/255;
   if(L>.32)return c;if(L<.12)return mapStyle==='neon'?'#e9e4ff':'#f4f1e8';const k=.42;return '#'+[r,g,b].map(v=>Math.round(v+(255-v)*k).toString(16).padStart(2,'0')).join('')}
+let lineMode='straat';if(B.preview)try{const v=localStorage.getItem('cafemap-lines');if(['nu','glad','straat','metro'].includes(v))lineMode=v}catch(_){}
+function offsetSegs(pts,offs){const n=pts.length;if(n<2)return pts;const N=[];for(let j=0;j<n-1;j++){const a=pts[j],b=pts[j+1],dx=b[0]-a[0],dy=b[1]-a[1],m=Math.hypot(dx,dy)||1;N.push([-dy/m,dx/m])}
+  const out=[];for(let j=0;j<n;j++){const p=pts[j];if(j===0||j===n-1){const k=j?n-2:0,o=offs[k];out.push([p[0]+N.at(k)[0]*o,p[1]+N.at(k)[1]*o]);continue}
+    const a=N[j-1],b=N[j],oa=offs[j-1],ob=offs[j];if(Math.abs(oa-ob)<1e-9){let mx=a[0]+b[0],my=a[1]+b[1];const ml=Math.hypot(mx,my);if(ml<1e-6){out.push([p[0]+a[0]*oa,p[1]+a[1]*oa]);continue}mx/=ml;my/=ml;const k=oa/Math.max(mx*a[0]+my*a[1],.4);out.push([p[0]+mx*k,p[1]+my*k])}
+    else{out.push([p[0]+a[0]*oa,p[1]+a[1]*oa]);out.push([p[0]+b[0]*ob,p[1]+b[1]*ob])}}return out}
+// street-following lines: offset each segment by its slot, ramp between slots, then round the corners
+function ribbon(ch,gap,ramp){const n=ch.length,out=[];if(n<2)return ch.map(p=>[p[0],p[1],1]);
+  const N=[],U=[],Lg=[];for(let j=0;j<n-1;j++){const dx=ch[j+1][0]-ch[j][0],dy=ch[j+1][1]-ch[j][1],m=Math.hypot(dx,dy)||1;N.push([-dy/m,dx/m]);U.push([dx/m,dy/m]);Lg.push(m)}
+  const o=j=>ch[j][2]*gap;
+  for(let j=0;j<n;j++){const p=ch[j],fx=p[3]?1:0;
+    if(j===0){out.push([p[0]+N[0][0]*o(0),p[1]+N[0][1]*o(0),fx]);continue}
+    if(j===n-1){const k=n-2;out.push([p[0]+N.at(k)[0]*o(k),p[1]+N.at(k)[1]*o(k),fx]);continue}
+    const oa=o(j-1),ob=o(j),a=N[j-1],b=N[j];
+    if(Math.abs(oa-ob)<1e-9){let mx=a[0]+b[0],my=a[1]+b[1];const ml=Math.hypot(mx,my);if(ml<1e-6){out.push([p[0]+a[0]*oa,p[1]+a[1]*oa,fx]);continue}mx/=ml;my/=ml;const k=oa/Math.max(mx*a[0]+my*a[1],.5);out.push([p[0]+mx*k,p[1]+my*k,fx])}
+    else{const ta=Math.min(ramp,Lg[j-1]*.45),tb=Math.min(ramp,Lg[j]*.45),ua=U[j-1],ub=U[j];
+      out.push([p[0]-ua[0]*ta+a[0]*oa,p[1]-ua[1]*ta+a[1]*oa,0]);out.push([p[0]+ub[0]*tb+b[0]*ob,p[1]+ub[1]*tb+b[1]*ob,0])}}
+  return out}
+function chaikin(q,it){for(let k=0;k<it;k++){const n=q.length;if(n<3)return q;const r=[q[0]];
+  for(let j=0;j<n-1;j++){const a=q[j],b=q[j+1],last=j+1===n-1;
+    if(!(j===0||a[2]))r.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25,0]);
+    if(!(last||b[2]))r.push([a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75,0]);
+    if(last||b[2])r.push(b)}q=r}return q}
+function smoothD(q){if(q.length<3)return 'M'+q.map(c=>c.join(' ')).join('L');let d=`M${q[0][0]} ${q[0][1]}`;for(let j=0;j<q.length-1;j++){const p0=q[Math.max(0,j-1)],p1=q[j],p2=q[j+1],p3=q[Math.min(q.length-1,j+2)],k=.18;
+  d+=`C${p1[0]+(p2[0]-p0[0])*k} ${p1[1]+(p2[1]-p0[1])*k} ${p2[0]-(p3[0]-p1[0])*k} ${p2[1]-(p3[1]-p1[1])*k} ${p2[0]} ${p2[1]}`}return d}
 function drawLines(){
-  gLines.innerHTML='';const s=scale(),n=D.lines.length;
+  gLines.innerHTML='';const s=scale(),n=D.lines.length,mode=morphT!==null?'nu':lineMode,fancy=mode!=='nu';
   D.lines.forEach((l,i)=>{
     if(!active(l.id))return;
-    const off=focusLine?0:(i-(n-1)/2)*2.2*s,p=l.s.map(x=>pos(st[x]));
-    const q=p.map((c,j)=>{const a=p[Math.max(0,j-1)],b=p[Math.min(p.length-1,j+1)];const dx=b[0]-a[0],dy=b[1]-a[1],m=Math.hypot(dx,dy)||1;return [c[0]-dy/m*off,c[1]+dx/m*off]});
+    const s0l=scale(),w=(focusLine?5:fancy?4.6-2*Math.min(1,Math.max(0,(s0l-1)/2)):3.2)*Math.pow(ZF,.8),gap=(w+1.2)*s;
+    const off=focusLine?0:(i-(n-1)/2)*(fancy?gap*.5:2.2*s);let p=l.s.map(x=>pos(st[x])),q,d='';
+    if(mode==='straat'&&B.routes&&B.routes.lines[l.id]){d=B.routes.lines[l.id].map(ch=>{const q2=chaikin(ribbon(ch,focusLine?0:gap,gap*4),2);return 'M'+q2.map(c=>c[0].toFixed(1)+' '+c[1].toFixed(1)).join('L')}).join('')}
+    else if(mode==='metro'){const m=[p[0]];for(let j=0;j<p.length-1;j++){const a=p[j],b=p[j+1],dx=b[0]-a[0],dy=b[1]-a[1],k=Math.min(Math.abs(dx),Math.abs(dy));if(k>2)m.push([a[0]+Math.sign(dx)*k,a[1]+Math.sign(dy)*k]);m.push(b)}p=m;q=offsetSegs(p,p.slice(1).map(()=>off))}
+    else q=p.map((c,j)=>{const a=p[Math.max(0,j-1)],b=p[Math.min(p.length-1,j+1)];const dx=b[0]-a[0],dy=b[1]-a[1],m=Math.hypot(dx,dy)||1;return [c[0]-dy/m*off,c[1]+dx/m*off]});
+    if(!d)d=mode==='glad'?smoothD(q):'M'+q.map(c=>c[0].toFixed(1)+' '+c[1].toFixed(1)).join('L');
     const dim=sel&&!st[sel].l.includes(l.id);
-    const w=(focusLine?5:3.2)*Math.pow(ZF,.8);
-    const pl=el('polyline',{points:q.map(c=>c.join(',')).join(' '),fill:'none',stroke:lc(l.c),...(mapStyle==='pirate'&&!focusLine?{'stroke-dasharray':'9 5'}:{}),'stroke-width':w,'stroke-linejoin':'round','stroke-linecap':'round',opacity:dim?.15:.93,...ns},gLines);
-    const hit=el('polyline',{points:pl.getAttribute('points'),fill:'none',stroke:'transparent','stroke-width':10,'data-line':l.id,...ns},gLines);
+    if(fancy)el('path',{d,fill:'none',stroke:'var(--land)','stroke-width':w+2.6,'stroke-linejoin':'round','stroke-linecap':'round',opacity:dim?.15:1,...ns},gLines);
+    const pl=el('path',{d,fill:'none',stroke:lc(l.c),...(mapStyle==='pirate'&&!focusLine?{'stroke-dasharray':'9 5'}:{}),'stroke-width':w,'stroke-linejoin':'round','stroke-linecap':'round',opacity:dim?.15:fancy?1:.93,...ns},gLines);
+    const hit=el('path',{d,fill:'none',stroke:'transparent','stroke-width':10,'data-line':l.id,...ns},gLines);
     hit.style.cursor='pointer';
     hit.addEventListener('pointerenter',e=>tip(e,'Lijn '+names[l.id]));hit.addEventListener('pointerleave',untip);
   });
@@ -289,6 +324,8 @@ function drawStations(){
   if(geo)B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?(mapStyle==='pirate'?16:13):9.5)*s0*FM,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);const tt=pirN(t);e.textContent=k==='area'&&mapStyle!=='pirate'&&mapStyle!=='chalk'?tt.toUpperCase():tt;
     if(mapStyle==='pirate'&&PIR[t]&&k!=='poi'){const fz=(k==='area'?16:9.5)*s0*FM;const e2=el('text',{x,y:y+fz*.95,'font-size':fz*.6,fill:'var(--muted)','font-style':'italic','text-anchor':'middle',opacity:.75,'pointer-events':'none'},gLab);e2.textContent='('+t+')'}});
   const cheapest=mapStyle==='pirate'&&priced().length?priced()[0].n:null;
+  if(lineMode==='straat'&&morphT===null&&B.routes&&s0<3){const lk=B.routes.links;D.stations.forEach(x=>{const k=lk[x.n];if(!k||!x.l.some(active))return;const [cx,cy]=pos(x);el('path',{d:`M${cx} ${cy}L${k[0]} ${k[1]}`,stroke:'var(--fg)','stroke-width':1.6,'stroke-linecap':'round',opacity:.55,fill:'none','pointer-events':'none',...ns},gSt)})}
+  const obst=[],cands=[];
   D.stations.forEach(x=>{
     if(!x.l.some(active))return;
     const [cx,cy]=pos(x),big=x.h||focusLine,r=(x.n===sel?7:big?5.6:3.6)*s,ok=passF(x);
@@ -301,10 +338,18 @@ function drawStations(){
     const hit=el('circle',{cx,cy,r:Math.max(r,12*s),fill:'transparent','data-n':x.n},gSt);
     hit.style.cursor='pointer';
     hit.addEventListener('pointerenter',e=>tip(e,x.n));hit.addEventListener('pointerleave',untip);
-    if(x.h||focusLine||s0<1.5||sel===x.n||posterish){const t=el('text',{x:cx+r+3*s,y:cy+3.5*s,'font-size':(x.h||sel===x.n?11.5:posterish?7.5:9.5)*s*FM,'font-weight':x.h||sel===x.n?700:500,fill:'var(--fg)',stroke:'var(--land)','stroke-width':3.2*s,'paint-order':'stroke','data-n':x.n},gLab);t.style.cursor='pointer';t.textContent=x.n}
+    obst.push([cx-r,cy-r,cx+r,cy+r]);
+    if(x.h||focusLine||s0<1.5||sel===x.n||posterish)cands.push({x,cx,cy,r,big:x.h||sel===x.n,prio:sel===x.n?3:x.h?2:1});
     if(mapStyle==='pirate'&&cheapest===x.n){const k=11*s;el('path',{d:`M${cx-k} ${cy-k}L${cx+k} ${cy+k}M${cx+k} ${cy-k}L${cx-k} ${cy+k}`,stroke:'#b5332b','stroke-width':4.5*Math.pow(ZF,.6),'stroke-linecap':'round',fill:'none','pointer-events':'none',...ns},gSt);const xt=el('text',{x:cx,y:cy-k-5*s,'font-size':10*s*FM,'text-anchor':'middle','font-style':'italic',fill:'#b5332b',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);xt.textContent='goedkoopste pint'}
     const pr=priceOf(x.n);if(pr!=null&&(priceMode||sel===x.n)){const w=26*s*FM,h=12*s*FM,bx=cx-w/2,by=cy+r+2.5*s;el('rect',{x:bx,y:by,width:w,height:h,rx:h/2,fill:priceColor(pr),'pointer-events':'none'},gLab);const pt=el('text',{x:cx,y:by+h*.74,'font-size':8.5*s*FM,'font-weight':700,'text-anchor':'middle',fill:'#fff','pointer-events':'none'},gLab);pt.textContent=eur(pr)}
   });
+  // place names where they do not collide with other names or cafés: right, left, above, below
+  const placed=[],hit=(b,list)=>list.some(o=>b[0]<o[2]&&b[2]>o[0]&&b[1]<o[3]&&b[3]>o[1]);
+  cands.sort((a,b)=>b.prio-a.prio).forEach(c=>{const fs=(c.big?11.5:posterish?7.5:9.5)*s*FM,w=c.x.n.length*fs*(c.big?.6:.56),h=fs,g=3*s,{cx,cy,r}=c;
+    const opts=[[cx+r+g,cy+fs*.35,'start',[cx+r+g,cy-h/2,cx+r+g+w,cy+h/2]],[cx-r-g,cy+fs*.35,'end',[cx-r-g-w,cy-h/2,cx-r-g,cy+h/2]],[cx,cy-r-g-fs*.25,'middle',[cx-w/2,cy-r-g-h,cx+w/2,cy-r-g]],[cx,cy+r+g+fs*.8,'middle',[cx-w/2,cy+r+g,cx+w/2,cy+r+g+h]]];
+    const others=obst.filter(o=>!(o[0]===cx-r&&o[1]===cy-r));
+    let pick=opts.find(o=>!hit(o[3],placed)&&!hit(o[3],others));if(!pick){if(c.prio<2)return;pick=opts[0]}
+    placed.push(pick[3]);const t=el('text',{x:pick[0],y:pick[1],'text-anchor':pick[2],'font-size':fs,'font-weight':c.big?700:500,fill:'var(--fg)',stroke:'var(--land)','stroke-width':3.2*s,'paint-order':'stroke','data-n':c.x.n},gLab);t.style.cursor='pointer';t.textContent=c.x.n});
 }
 let ZF=1;
 function render(){{const e=morphT===null?1:ease(morphT);gBase.style.opacity=e;svg.style.background=morphT===null?'':`color-mix(in srgb, var(--land) ${Math.round(e*100)}%, #ffffff)`}svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);const s=scale();ZF=Math.min(2.4,Math.max(1,Math.pow(1.3/s,.55)));svg.style.setProperty('--z',Math.min(3.2,Math.max(1,Math.pow(1.3/s,.65))).toFixed(2));const wp=svg.querySelector('#waves');if(wp)wp.setAttribute('patternTransform',`scale(${Math.max(.3,Math.min(1,s/3)).toFixed(3)})`);const gb=svg.querySelector('#glow feGaussianBlur');if(gb)gb.setAttribute('stdDeviation',(3.5*s).toFixed(2));drawLines();drawStations()}
@@ -463,6 +508,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!card.hidden)close(
 const lvBtns=[...document.querySelectorAll('.levels button')];
 const syncLv=()=>lvBtns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.sty===mapStyle));
 lvBtns.forEach(b=>b.onclick=e=>{e.stopPropagation();mapStyle=b.dataset.sty;try{localStorage.setItem('cafemap-style',mapStyle)}catch(_){}syncLv();drawBase();render()});syncLv();
+// line style preview control
+if(B.preview){const lm=document.getElementById('lmode');lm.hidden=false;const bs=[...lm.querySelectorAll('button')];const sync=()=>bs.forEach(b=>b.setAttribute('aria-pressed',b.dataset.lm===lineMode));sync();
+  bs.forEach(b=>b.onclick=e=>{e.stopPropagation();lineMode=b.dataset.lm;try{localStorage.setItem('cafemap-lines',lineMode)}catch(_){}sync();render()})}
 // tabs
 const tabBtns=[...document.querySelectorAll('.tabs button')],mp=document.getElementById('morph'),mt=document.getElementById('mt'),mplay=document.getElementById('mplay');
 let savedStyle=null,mAnim=null;

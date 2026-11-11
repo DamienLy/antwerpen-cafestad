@@ -15,7 +15,7 @@ base = {
  "parks": [
   [[51.2108,4.4100],[51.2140,4.4120],[51.2145,4.4170],[51.2112,4.4175]],
   [[51.2288,4.4235],[51.2338,4.4235],[51.2342,4.4330],[51.2292,4.4330]]],
- "labels": [["Schelde",51.2135,4.3865,"water"],["Centrum",51.2225,4.3955,"area"],["Zuid",51.2060,4.3935,"area"],["Eilandje",51.2335,4.4030,"area"],["Seefhoek",51.2270,4.4280,"area"],["Borgerhout",51.2160,4.4440,"area"],["Zurenborg",51.2095,4.4290,"area"],["Berchem",51.1965,4.4300,"area"],["Linkeroever",51.2200,4.3820,"area"],["Centraal Station",51.2168,4.4235,"poi"],["Stadspark",51.2126,4.4140,"poi"],["Park Spoor Noord",51.2315,4.4282,"poi"],["Leien",51.2240,4.4150,"poi"],["Ring R1",51.2060,4.4460,"poi"],["Meir",51.2190,4.4090,"poi"],["Grote Markt",51.2216,4.3990,"poi"],["MAS",51.2289,4.4049,"poi"]]
+ "labels": [["Schelde",51.2135,4.3865,"water"],["Centrum",51.2238,4.4075,"area"],["Zuid",51.2060,4.3935,"area"],["Eilandje",51.2335,4.4030,"area"],["Seefhoek",51.2270,4.4280,"area"],["Borgerhout",51.2160,4.4440,"area"],["Zurenborg",51.2095,4.4290,"area"],["Berchem",51.1965,4.4300,"area"],["Linkeroever",51.2200,4.3820,"area"],["Centraal Station",51.2168,4.4235,"poi"],["Stadspark",51.2126,4.4140,"poi"],["Park Spoor Noord",51.2315,4.4282,"poi"],["Leien",51.2240,4.4150,"poi"],["Ring R1",51.2060,4.4460,"poi"],["Meir",51.2190,4.4090,"poi"],["Grote Markt",51.2216,4.3990,"poi"],["MAS",51.2289,4.4049,"poi"]]
 }
 
 base["docks"] = [
@@ -62,5 +62,7 @@ base["poi"] = [["Kathedraal",51.2203,4.4015],["Het Steen",51.2227,4.3972],["MAS"
  ["Station Berchem",51.1993,4.4325],["Permeke",51.2219,4.4200],["Sint-Pauluskerk",51.2236,4.4005]]
 base["labels"] = [l for l in base["labels"] if l[3] != "poi" or l[0] in ("Stadspark","Park Spoor Noord","Leien","Ring R1")]
 
+base['osm'] = json.load(open('osm.json'))
+for k in ('river','docks','parks','leien','ring','rail','meir','main','minor','squares'): base.pop(k, None)
 html = open('template.html').read().replace('__DATA__', json.dumps(d, ensure_ascii=False)).replace('__BASE__', json.dumps(base))
 open('antwerpen-cafestad.html','w').write(html)

@@ -3,10 +3,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
 <style>
 /* Layout: poster-style header, full-bleed map, floating preview card (bottom sheet on phones) */
-:root{--bg:#f6f4ef;--land:#eeeae1;--water:#b7d2e4;--road:#ddd6c6;--ring:#cdbd9f;--park:#cfe1c4;--square:#e4ded0;--street:#d2c8b2;--fg:#1d2126;--muted:#686d74;--card:#ffffff;--line:#e2ddd2;--accent:#e2632a;--accent2:#c7283a;
+:root{--bg:#f6f4ef;--land:#eeeae1;--water:#b7d2e4;--road:#ddd6c6;--ring:#cdbd9f;--park:#cfe1c4;--square:#e4ded0;--street:#d2c8b2;--minor:#dcd5c6;--ped:#e6d6b8;--rail:#a59f95;--mainfill:#fffdf8;--maincase:#d3c3a2;--tfill:#faf7f0;--tcase:#d9d0bd;--fg:#1d2126;--muted:#686d74;--card:#ffffff;--line:#e2ddd2;--accent:#e2632a;--accent2:#c7283a;
 --display:"Barlow Condensed",system-ui,sans-serif;--body:"Inter",system-ui,sans-serif;--shadow:0 10px 30px rgba(30,25,15,.16)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171b;--land:#1b1f24;--water:#1c3446;--road:#353b43;--ring:#4b4436;--park:#21332a;--square:#262b31;--street:#3a4048;--fg:#ebe8e2;--muted:#9da3ab;--card:#23272d;--line:#323840;--shadow:0 10px 30px rgba(0,0,0,.5);color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14171b;--land:#1b1f24;--water:#1c3446;--road:#353b43;--ring:#4b4436;--park:#21332a;--square:#262b31;--street:#3a4048;--fg:#ebe8e2;--muted:#9da3ab;--card:#23272d;--line:#323840;--shadow:0 10px 30px rgba(0,0,0,.5);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171b;--land:#1b1f24;--water:#1c3446;--road:#353b43;--ring:#4b4436;--park:#21332a;--square:#262b31;--street:#3a4048;--minor:#2b3138;--ped:#3d382f;--rail:#5d646e;--mainfill:#3b4048;--maincase:#56503f;--tfill:#31363e;--tcase:#3f454d;--fg:#ebe8e2;--muted:#9da3ab;--card:#23272d;--line:#323840;--shadow:0 10px 30px rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171b;--land:#1b1f24;--water:#1c3446;--road:#353b43;--ring:#4b4436;--park:#21332a;--square:#262b31;--street:#3a4048;--minor:#2b3138;--ped:#3d382f;--rail:#5d646e;--mainfill:#3b4048;--maincase:#56503f;--tfill:#31363e;--tcase:#3f454d;--fg:#ebe8e2;--muted:#9da3ab;--card:#23272d;--line:#323840;--shadow:0 10px 30px rgba(0,0,0,.5);color-scheme:dark}
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);display:flex;flex-direction:column}
 header{padding-block:12px 10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
@@ -112,7 +112,7 @@ text{font-family:var(--body)}
   <svg id="map" role="img" aria-label="Kaart van Antwerpen met cafélijnen"></svg>
   <div id="tip"></div>
   <div id="card" hidden></div>
-  <div class="key"><span><i class="dot"></i>adres gevonden</span><span><i class="dot g"></i>positie geschat</span><span>Ondergrond bij benadering getekend</span></div>
+  <div class="key"><span><i class="dot"></i>adres gevonden</span><span><i class="dot g"></i>positie geschat</span><span>Kaart © OpenStreetMap-bijdragers</span></div>
   <div class="levels" role="group" aria-label="Kaartstijl"><button data-lv="1">Rustig</button><button data-lv="2">Straten</button><button data-lv="3">Detail</button></div>
   <div class="zoom"><button id="zi" aria-label="Inzoomen">+</button><button id="zo" aria-label="Uitzoomen">−</button><button id="zf" aria-label="Hele kaart">⤢</button></div>
 </div>
@@ -130,20 +130,21 @@ const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.set
 const gBase=el('g',{},svg), gLines=el('g',{},svg), gSt=el('g',{},svg), gLab=el('g',{},svg);
 const pts=a=>a.map(([la,lo])=>P(la,lo).join(',')).join(' ');
 const ns={'vector-effect':'non-scaling-stroke'};
-let mapLevel=2;try{mapLevel=+localStorage.getItem('cafemap-level')||2}catch(_){}
+let mapLevel=3;try{mapLevel=+localStorage.getItem('cafemap-level2')||3}catch(_){}
 function circ(la,lo,m){const [x,y]=P(la,lo);return {cx:x,cy:y,r:m*K/111200}}
 function drawBase(){
-  gBase.innerHTML='';const lv=mapLevel;
-  el('polygon',{points:pts(B.river),fill:'var(--water)'},gBase);
-  B.docks.forEach(d=>el('polygon',{points:pts(d),fill:'var(--water)'},gBase));
-  B.parks.forEach(d=>el('polygon',{points:pts(d),fill:'var(--park)'},gBase));
-  if(lv>=3)B.minor.forEach(m=>el('polyline',{points:pts(m),fill:'none',stroke:'var(--road)','stroke-width':1.6,'stroke-linecap':'round',...ns},gBase));
-  if(lv>=2){B.squares.forEach(([la,lo,m])=>el('circle',{...circ(la,lo,m),fill:'var(--square)'},gBase));
-    B.main.forEach(([n,m],i)=>el('path',{id:'st'+i,d:'M'+m.map(([la,lo])=>P(la,lo).join(',')).join('L'),fill:'none',stroke:'var(--street)','stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round',...ns},gBase))}
-  el('polyline',{points:pts(B.ring),fill:'none',stroke:'var(--ring)','stroke-width':7,'stroke-linecap':'round',...ns},gBase);
-  el('polyline',{points:pts(B.leien),fill:'none',stroke:'var(--road)','stroke-width':6,'stroke-linecap':'round',...ns},gBase);
-  if(lv<2)el('polyline',{points:pts(B.meir),fill:'none',stroke:'var(--road)','stroke-width':4,...ns},gBase);
-  el('polyline',{points:pts(B.rail),fill:'none',stroke:'var(--muted)','stroke-width':1.5,'stroke-dasharray':'6 4',...ns},gBase);
+  gBase.innerHTML='';const lv=mapLevel,O=B.osm,R='round';
+  const pth=(d,a)=>el('path',{d,fill:'none','stroke-linecap':R,'stroke-linejoin':R,...a,...ns},gBase);
+  pth(O.G,{fill:'var(--park)'});
+  pth(O.W,{fill:'var(--water)'});
+  if(lv>=2)pth(O.R,{stroke:'var(--minor)','stroke-width':lv>=3?1.6:1});
+  if(lv>=2)pth(O.P,{stroke:'var(--ped)','stroke-width':lv>=3?2.4:1.6});
+  pth(O.Z,{stroke:'var(--rail)','stroke-width':1.3,'stroke-dasharray':'5 3','stroke-linecap':'butt'});
+  if(lv>=2){pth(O.T,{stroke:'var(--tcase)','stroke-width':lv>=3?4.2:3.2});pth(O.T,{stroke:'var(--tfill)','stroke-width':lv>=3?2.6:1.8})}
+  pth(O.M,{stroke:'var(--maincase)','stroke-width':lv>=2?5.2:4});
+  pth(O.M,{stroke:'var(--mainfill)','stroke-width':lv>=2?3.4:2.4});
+  const defs=el('defs',{},gBase);
+  if(lv>=3)O.N.forEach(([n,L,d],i)=>el('path',{id:'sn'+i,d},defs));
 }
 drawBase();
 const scale=()=>view.w/svg.clientWidth;
@@ -165,7 +166,10 @@ function drawLines(){
 function drawStations(){
   gSt.innerHTML='';gLab.innerHTML='';const s=scale();
   if(mapLevel>=2)B.poi.forEach(([t,la,lo])=>{const [x,y]=P(la,lo);el('rect',{x:x-2.6*s,y:y-2.6*s,width:5.2*s,height:5.2*s,rx:1*s,fill:'var(--muted)',opacity:.7,'pointer-events':'none'},gLab);if(mapLevel>=3||s<1.2){const e=el('text',{x:x+5*s,y:y+3*s,'font-size':8.5*s,'font-style':'italic',fill:'var(--muted)',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);e.textContent=t}});
-  if(mapLevel>=3&&s<3.2)B.main.forEach(([n],i)=>{const e=el('text',{'font-size':7.5*s,fill:'var(--muted)',dy:-3*s,'letter-spacing':'.04em','pointer-events':'none',stroke:'var(--land)','stroke-width':2*s,'paint-order':'stroke'},gLab);const tp=el('textPath',{href:'#st'+i,startOffset:'12%'},e);tp.textContent=n});
+  if(mapLevel>=3&&s<2.2){let c=0;const vx0=view.x,vy0=view.y,vx1=view.x+view.w,vy1=view.y+view.h,fs=7.5*s;
+    B.osm.N.forEach(([n,L,d,bb],i)=>{if(c>70||bb[2]<vx0||bb[0]>vx1||bb[3]<vy0||bb[1]>vy1)return;if(L<n.length*fs*.62+30*s)return;c++;
+      const e=el('text',{'font-size':fs,fill:'var(--muted)',dy:2.6*s,'letter-spacing':'.03em','pointer-events':'none',stroke:'var(--land)','stroke-width':2.4*s,'paint-order':'stroke'},gLab);
+      const tp=el('textPath',{href:'#sn'+i,startOffset:'50%','text-anchor':'middle'},e);tp.textContent=n})}
   B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?13:9.5)*s,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);e.textContent=k==='area'?t.toUpperCase():t});
   D.stations.forEach(x=>{
     if(!x.l.some(active))return;
@@ -198,7 +202,7 @@ function flyTo(lat,lon,w){const [tx,ty]=P(lat,lon);const tw=w||Math.min(view.w,1
 const store={get(k,d){try{return JSON.parse(localStorage.getItem('cafemap-'+k))??d}catch(_){return d}},set(k,v){try{localStorage.setItem('cafemap-'+k,JSON.stringify(v))}catch(_){}}};
 const me={visited:new Set(store.get('visited',[])),fav:new Set(store.get('fav',[])),notes:store.get('notes',{})};
 const saveMe=()=>{store.set('visited',[...me.visited]);store.set('fav',[...me.fav]);store.set('notes',me.notes)};
-const FILTERS={terras:'Terras',muziek:'Live muziek',bier:'Bier',cocktails:'Cocktails',laat:'Laat open',eten:'Eten',lgbtq:'LGBTQ+',student:'Student',fav:'★ Favorieten',todo:'Nog niet bezocht'};
+const FILTERS={terras:'Terras',muziek:'Live muziek',bier:'Bier',cocktails:'Cocktails',laat:'Laat open',eten:'Eten',student:'Student',fav:'★ Favorieten',todo:'Nog niet bezocht'};
 const activeF=new Set();
 const passF=x=>[...activeF].every(f=>f==='fav'?me.fav.has(x.n):f==='todo'?!me.visited.has(x.n):(x.f||[]).includes(f));
 // card
@@ -306,6 +310,6 @@ document.getElementById('zi').onclick=()=>ctr(1/1.4);document.getElementById('zo
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!card.hidden)close()});
 const lvBtns=[...document.querySelectorAll('.levels button')];
 const syncLv=()=>lvBtns.forEach(b=>b.setAttribute('aria-pressed',+b.dataset.lv===mapLevel));
-lvBtns.forEach(b=>b.onclick=e=>{e.stopPropagation();mapLevel=+b.dataset.lv;try{localStorage.setItem('cafemap-level',mapLevel)}catch(_){}syncLv();drawBase();render()});syncLv();
+lvBtns.forEach(b=>b.onclick=e=>{e.stopPropagation();mapLevel=+b.dataset.lv;try{localStorage.setItem('cafemap-level2',mapLevel)}catch(_){}syncLv();drawBase();render()});syncLv();
 fit();addEventListener('resize',fit);
 </script>

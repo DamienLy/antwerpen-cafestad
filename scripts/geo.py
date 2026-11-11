@@ -142,6 +142,16 @@ for v in L.values():
             names.append(s)
 
 coords = {n: (A[n][1], A[n][2]) for n in names if n in A and A[n][1] is not None}
+exec(open('osm_fix.py').read())
+for n,v in O.items():
+    coords[n]=(v[0],v[1])
+    if len(v)>2:
+        A[n]=(v[2],v[0],v[1],'gps')
+    elif n in A: A[n]=(A[n][0],v[0],v[1],'gps')
+    else: A[n]=('Locatie via OpenStreetMap',v[0],v[1],'gps')
+for n,v in N.items():
+    coords[n]=v
+    if n in A: A[n]=(A[n][0],v[0],v[1],'adres')
 
 def interp(n):
     for key, v in L.items():

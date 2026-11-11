@@ -89,6 +89,18 @@ F = {
  "Barbossa": "Café aan de Sint-Jorispoort, buur van Korsakov, voor wie het nachtleven van het Mechelseplein wil verderzetten.",
  "De Kat": "Café in de Wolstraat, het straatje dat de Grote Markt met de Stadswaag verbindt.",
 }
+
+F.update({
+ "Stan Lee": "Café in de Statiestraat, de levendige winkelstraat van Berchem richting het station.",
+ "Villegas": "Café in de Uitbreidingstraat in Berchem, een eind van de drukte van het centrum.",
+ "De Valk": "Café in de Seefhoek, een paar straten van de Kerkstraat.",
+ "'t Werkhuys": "Café in Borgerhout extra muros, voorbij de Ring.",
+ "Den Dammer": "Café aan het Damplein, met Zeppelin als directe buur.",
+ "Bato Batu": "Café vlak bij de Lange Nieuwstraat, naast het Borze café.",
+ "Zorro": "Bar aan het Hendrik Conscienceplein, schuin tegenover De Zwaan.",
+ "Spoor 8": "Studentenbar op de Ossenmarkt, tussen Kassa 4 en Barracuda.",
+ "Copain": "Café op de Ossenmarkt, het derde studentencafé op hetzelfde plein.",
+ "ABC": "Zaak aan het De Coninckplein in de Seefhoek, op de poster een groot knooppunt."})
 d = json.load(open('data.json'))
 L = {l['id']: l['s'] for l in d['lines']}
 missing = []
@@ -112,7 +124,7 @@ print("line mentions:", [s['n'] for s in d['stations'] if s['t'] and re.search(r
 json.dump(d, open('data.json', 'w'), ensure_ascii=False)
 # feature tags from the researched texts
 import re as _re
-TAGS = {"terras":r"terras","muziek":r"live muziek|jazz|optred|concert|DJ","bier":r"bier|tap|brouw|craft|jenever","cocktails":r"cocktail","laat":r"tot [2-6] uur|nacht|laat","eten":r"spaghetti|pasta|tapas|lunch|brunch|steak|pizza|kaas|omelet|eten|lasagne|nacho|bitterbal|croissant","lgbtq":r"LGBTQ","student":r"student"}
+TAGS = {"terras":r"terras","muziek":r"live muziek|jazz|optred|concert|DJ","bier":r"bier|tap|brouw|craft|jenever","cocktails":r"cocktail","laat":r"tot [2-6] uur|nacht|laat","eten":r"spaghetti|pasta|tapas|lunch|brunch|steak|pizza|kaas|omelet|eten|lasagne|nacho|bitterbal|croissant","student":r"student"}
 for s in d['stations']:
     t = s['t'] or ''
     s['f'] = [k for k, rx in TAGS.items() if _re.search(rx, t, _re.I)]

@@ -11,12 +11,19 @@ html,body{height:100%;margin:0}
 body{height:100dvh}
 button,a,input{touch-action:manipulation}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);display:flex;flex-direction:column}
-header{padding-block:12px 10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
+header{padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:auto minmax(0,1fr) minmax(250px,auto);column-gap:22px;align-items:center;border-bottom:1px solid var(--line)}
+.brand{display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.mid{display:flex;flex-direction:column;gap:7px;min-width:0}
+.mid .chips{flex-wrap:wrap;overflow:visible}
+.side{display:flex;flex-direction:column;gap:7px;align-items:stretch}
+.acts{display:flex;gap:6px;justify-content:flex-end}
+.tbtn.icon{font-size:.95rem;padding:4px 9px;line-height:1}
+#wrap.nostella .cartouche i{display:none}
 .top{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,4vw,2.4rem);line-height:.95;margin:0;color:var(--accent);text-wrap:balance}
 h1 span{color:var(--accent2)}
 .sub{color:var(--muted);font-size:.8rem;margin:2px 0 0}
-.search{position:relative;flex:0 1 260px;min-width:0}
+.search{position:relative;min-width:0}
 .search input{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;padding:8px 12px;font:500 .85rem var(--body)}
 .search input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 #results{position:absolute;z-index:5;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);max-height:260px;overflow:auto;padding:4px}
@@ -95,26 +102,34 @@ svg:active{cursor:grabbing}
 .levels button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 @media (max-width:640px){.levels{top:auto;bottom:12px}#card:not([hidden])~.levels{display:none}}
 text{font-family:var(--body)}
+@media (max-width:1050px) and (min-width:641px){
+ header{grid-template-columns:auto minmax(0,1fr);row-gap:8px}
+ .side{grid-column:1 / -1;flex-direction:row;align-items:center}
+ .side .search{flex:1}
+}
 @media (max-width:640px){
- header{padding-block:8px 6px;gap:6px}
- .top{gap:6px;align-items:center}
- .top>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
+ header{display:flex;flex-direction:column;align-items:stretch;padding-block:8px 6px;gap:6px}
+ .mid,.side{display:contents}
+ .brand{order:1;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;width:100%}
+ .search{order:2}
+ #chips{order:3}
+ .acts{order:4;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}
+ .acts::-webkit-scrollbar{display:none}
+ #filters{order:5}
+ .mid .chips{flex-wrap:nowrap;overflow-x:auto}
  h1{font-size:1.5rem}
  .tabs{margin-top:0;flex:none}
  .tabs button{padding:7px 10px;font-size:.78rem}
- .sub{display:none}
- .search{flex:1 1 100%}
  .search input{font-size:16px;padding:9px 12px}
- #chips,.tools{margin-inline:-16px;padding-inline:16px}
+ #chips,#filters{margin-inline:-16px;padding-inline:16px}
  .chip{padding:7px 12px 7px 8px;font-size:.8rem;min-width:42px}
- .tools{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
- .tools::-webkit-scrollbar,.chips::-webkit-scrollbar{display:none}
- .tools #filters{flex:none;overflow:visible}
+ .chips::-webkit-scrollbar{display:none}
  .fchip{padding:7px 12px;font-size:.78rem}
- .tbtn{padding:7px 12px;font-size:.8rem;order:-1}
+ .tbtn{padding:7px 12px;font-size:.8rem}
+ .tbtn.icon{padding:5px 11px;font-size:1rem}
  #wrap{min-height:0}
  #card{max-height:62%}
- #pin,#note,#pimp{font-size:16px}
+ #pin,#note,#pimp,#sug{font-size:16px}
  #wrap .key{display:flex;left:12px;right:auto;bottom:60px;padding:2px 7px;font-size:.6rem;opacity:.85}
  #wrap .key span:not(:last-child){display:none}
  #card:not([hidden])~.key{display:none}
@@ -122,7 +137,7 @@ text{font-family:var(--body)}
  .zoom button{width:42px;height:42px}
  #morph{padding:6px 8px}
 }
-.tabs{display:inline-flex;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;margin-top:8px}
+.tabs{display:inline-flex;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px}
 .tabs button{border:0;background:none;color:var(--muted);font:600 .78rem var(--body);padding:6px 12px;border-radius:7px;cursor:pointer}
 .tabs button[aria-pressed="true"]{background:var(--accent);color:#fff}
 .tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -164,21 +179,20 @@ svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b24
 .prow i{font-style:normal;color:var(--muted);font-size:.72rem;text-align:center}
 .prow small{color:var(--muted);font-size:.68rem;display:block}
 .plist{display:flex;flex-direction:column;max-height:300px;overflow:auto}
+.sw{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);cursor:pointer;margin-top:4px}
+.sw input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent);flex:none}
+.sw span{display:flex;flex-direction:column;gap:2px;font-size:.85rem}.sw small{color:var(--muted);font-size:.74rem}
+.sh{font:700 .85rem var(--body);margin:16px 0 6px}
+#sug{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:9px;padding:8px 10px;font:.85rem var(--body);resize:vertical}
 #pimp{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:9px;padding:7px 9px;font:.75rem ui-monospace,monospace}
 </style>
 <header>
-  <div class="top">
-    <div>
-      <h1>Cafékaart <span>Antwerpen</span></h1><nav class="tabs" aria-label="Weergave"><button data-tab="map" aria-pressed="true">Kaart</button><button data-tab="morph" aria-pressed="false">Poster ↔ kaart</button></nav>
-      <p class="sub">De metrokaart van de poster, op de echte stad gelegd. Tik een café, filter, of laat je verrassen.</p>
-    </div>
-    <div class="search">
-      <input id="q" type="search" placeholder="Zoek een café…" autocomplete="off" aria-label="Zoek een café">
-      <div id="results" hidden></div>
-    </div>
+  <div class="brand"><h1>Cafékaart <span>Antwerpen</span></h1><nav class="tabs" aria-label="Weergave"><button data-tab="map" aria-pressed="true">Kaart</button><button data-tab="morph" aria-pressed="false">Poster ↔ kaart</button></nav></div>
+  <div class="mid"><div class="chips" id="chips"></div><div class="chips" id="filters"></div></div>
+  <div class="side">
+    <div class="search"><input id="q" type="search" placeholder="Zoek een café…" autocomplete="off" aria-label="Zoek een café"><div id="results" hidden></div></div>
+    <div class="acts"><button class="tbtn" id="rnd">🎲 Verras me</button><button class="tbtn" id="priceBtn">🍺 Stella-index</button><button class="tbtn" id="tourBtn">Mijn tocht <b id="tourCount">0</b></button><button class="tbtn icon" id="setBtn" aria-label="Instellingen" title="Instellingen">⚙</button></div>
   </div>
-  <div class="chips" id="chips"></div>
-  <div class="tools"><div class="chips" id="filters"></div><button class="tbtn" id="rnd">🎲 Verras me</button><button class="tbtn" id="priceBtn">🍺 Stella-index</button><button class="tbtn" id="tourBtn">Mijn tocht <b id="tourCount">0</b></button></div>
 </header>
 <div id="wrap">
   <svg id="map" role="img" aria-label="Kaart van Antwerpen met cafélijnen"></svg>
@@ -326,7 +340,7 @@ function drawStations(){
       const tp=el('textPath',{href:'#sn'+i,startOffset:'50%','text-anchor':'middle'},e);tp.textContent=n})}
   if(geo)B.labels.forEach(([t,la,lo,k])=>{const [x,y]=P(la,lo);const e=el('text',{x,y,'font-size':(k==='area'?(mapStyle==='pirate'?16:13):9.5)*s0*FM,fill:k==='water'?'#4f86a8':'var(--muted)','font-style':k==='water'?'italic':'normal','font-weight':k==='area'?700:400,'text-anchor':'middle','letter-spacing':k==='area'?'.12em':'0',opacity:.8,'pointer-events':'none'},gLab);const tt=pirN(t);e.textContent=k==='area'&&mapStyle!=='pirate'&&mapStyle!=='chalk'?tt.toUpperCase():tt;
     if(mapStyle==='pirate'&&PIR[t]&&k!=='poi'){const fz=(k==='area'?16:9.5)*s0*FM;const e2=el('text',{x,y:y+fz*.95,'font-size':fz*.6,fill:'var(--muted)','font-style':'italic','text-anchor':'middle',opacity:.75,'pointer-events':'none'},gLab);e2.textContent='('+t+')'}});
-  const cheapest=mapStyle==='pirate'&&priced().length?priced()[0].n:null;
+  const cheapest=mapStyle==='pirate'&&stellaOn&&priced().length?priced()[0].n:null;
   if(lineMode==='straat'&&morphT===null&&B.routes&&s0<3){const lk=B.routes.links;D.stations.forEach(x=>{const k=lk[x.n];if(!k||!x.l.some(active))return;const [cx,cy]=pos(x);el('path',{d:`M${cx} ${cy}L${k[0]} ${k[1]}`,stroke:'var(--fg)','stroke-width':1.6,'stroke-linecap':'round',opacity:.55,fill:'none','pointer-events':'none',...ns},gSt)})}
   const obst=[],cands=[];
   D.stations.forEach(x=>{
@@ -344,7 +358,7 @@ function drawStations(){
     obst.push([cx-r,cy-r,cx+r,cy+r]);
     if(x.h||focusLine||s0<1.5||sel===x.n||posterish)cands.push({x,cx,cy,r,big:x.h||sel===x.n,prio:sel===x.n?3:x.h?2:1});
     if(mapStyle==='pirate'&&cheapest===x.n){const k=11*s;el('path',{d:`M${cx-k} ${cy-k}L${cx+k} ${cy+k}M${cx+k} ${cy-k}L${cx-k} ${cy+k}`,stroke:'#b5332b','stroke-width':4.5*Math.pow(ZF,.6),'stroke-linecap':'round',fill:'none','pointer-events':'none',...ns},gSt);const xt=el('text',{x:cx,y:cy-k-5*s,'font-size':10*s*FM,'text-anchor':'middle','font-style':'italic',fill:'#b5332b',stroke:'var(--land)','stroke-width':2.5*s,'paint-order':'stroke','pointer-events':'none'},gLab);xt.textContent='goedkoopste pint'}
-    const pr=priceOf(x.n);if(pr!=null&&(priceMode||sel===x.n)){const w=26*s*FM,h=12*s*FM,bx=cx-w/2,by=cy+r+2.5*s;el('rect',{x:bx,y:by,width:w,height:h,rx:h/2,fill:priceColor(pr),'pointer-events':'none'},gLab);const pt=el('text',{x:cx,y:by+h*.74,'font-size':8.5*s*FM,'font-weight':700,'text-anchor':'middle',fill:'#fff','pointer-events':'none'},gLab);pt.textContent=eur(pr)}
+    const pr=priceOf(x.n);if(stellaOn&&pr!=null&&(priceMode||sel===x.n)){const w=26*s*FM,h=12*s*FM,bx=cx-w/2,by=cy+r+2.5*s;el('rect',{x:bx,y:by,width:w,height:h,rx:h/2,fill:priceColor(pr),'pointer-events':'none'},gLab);const pt=el('text',{x:cx,y:by+h*.74,'font-size':8.5*s*FM,'font-weight':700,'text-anchor':'middle',fill:'#fff','pointer-events':'none'},gLab);pt.textContent=eur(pr)}
   });
   // place names where they do not collide with other names or cafés: right, left, above, below
   const placed=[],hit=(b,list)=>list.some(o=>b[0]<o[2]&&b[2]>o[0]&&b[1]<o[3]&&b[3]>o[1]);
@@ -371,7 +385,7 @@ function flyTo(lat,lon,w){if(morphT!==null){render();return}const [tx,ty]=P(lat,
 const store={get(k,d){try{return JSON.parse(localStorage.getItem('cafemap-'+k))??d}catch(_){return d}},set(k,v){try{localStorage.setItem('cafemap-'+k,JSON.stringify(v))}catch(_){}}};
 const me={visited:new Set(store.get('visited',[])),fav:new Set(store.get('fav',[])),notes:store.get('notes',{})};
 const saveMe=()=>{store.set('visited',[...me.visited]);store.set('fav',[...me.fav]);store.set('notes',me.notes)};
-me.price=store.get('price',{});let priceMode=store.get('pricemode',false);
+me.price=store.get('price',{});let priceMode=store.get('pricemode',false),stellaOn=store.get('stella',false);
 const savePrice=()=>store.set('price',me.price);
 const priceOf=n=>{const v=me.price[n]??(st[n]&&st[n].p);return v==null?null:+v};
 const eur=v=>'€'+v.toFixed(2).replace('.',',');
@@ -379,7 +393,7 @@ const priced=()=>D.stations.filter(x=>priceOf(x.n)!=null).sort((a,b)=>priceOf(a.
 function priceColor(v){const ps=priced().map(x=>priceOf(x.n));if(ps.length<2)return '#2f8f4e';const lo=ps[0],hi=ps[ps.length-1],k=hi>lo?(v-lo)/(hi-lo):0;const c=[[47,143,78],[214,160,30],[199,40,58]];const i=k<.5?0:1,f=k<.5?k*2:(k-.5)*2,a=c[i],b=c[i+1];return `rgb(${a.map((x,j)=>Math.round(x+(b[j]-x)*f)).join(',')})`}
 function rankText(n){const v=priceOf(n);if(v==null)return 'Nog geen prijs. Vul in wat een Stella hier kost.';const ps=priced(),i=ps.findIndex(x=>x.n===n),avg=ps.reduce((a,x)=>a+priceOf(x.n),0)/ps.length;
   return ps.length<2?'Je eerste prijs. Hoe meer cafés je invult, hoe beter de ranking.':(i===0?'🏆 Goedkoopste ':'#'+(i+1)+' ')+'van '+ps.length+' cafés met prijs · gemiddeld '+eur(avg)}
-const FILTERS={terras:'Terras',muziek:'Live muziek',bier:'Bier',cocktails:'Cocktails',laat:'Laat open',fav:'★ Favorieten',todo:'Nog niet bezocht'};
+const FILTERS={muziek:'Live muziek',cocktails:'Cocktails',laat:'Laat open',fav:'★ Favorieten',todo:'Nog niet bezocht'};
 const activeF=new Set();
 const passF=x=>[...activeF].every(f=>f==='fav'?me.fav.has(x.n):f==='todo'?!me.visited.has(x.n):(x.f||[]).includes(f));
 // card
@@ -409,8 +423,8 @@ function pick(n,fly){sel=n;const x=st[n];
   const nearH=near.length?`<div class="near"><span>In de buurt</span>${near.map(([o,d])=>`<button data-go="${esc(o.n)}">${esc(o.n)}<small>${fmtD(d)}</small></button>`).join('')}</div>`:'';
   const qq=encodeURIComponent(n+' '+x.a.split(' (')[0]+' Antwerpen'), aq=encodeURIComponent(x.a?x.a.split(' (')[0]+', Antwerpen, België':'');
   const maps=x.a?`<a class="btn primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=${qq}">Google Maps ↗</a><a class="btn" target="_blank" rel="noopener noreferrer" href="https://maps.apple.com/?q=${encodeURIComponent(n)}&address=${aq}">Apple Kaarten ↗</a><button class="btn" data-copy="${esc(x.a.split(' (')[0]+', Antwerpen')}">Kopieer adres</button>`:'';
-  card.innerHTML=`<div class="band">${band}</div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">${x.b?esc(x.b):'Onbekend adres'}${x.h?' · knooppunt':''}<span class="q">${qLabel[x.q]}</span></div><h2>${esc(n)}</h2>${x.a?`<p class="addr">${esc(x.a)}</p>`:''}${blurb}${nearH}<div class="rides">${rides}</div><div class="actions">${maps}</div><div class="stella"><label for="pin">🍺 Stella 25 cl</label><span class="eur">€<input id="pin" type="text" inputmode="decimal" placeholder="?" value="${priceOf(n)!=null?priceOf(n).toFixed(2).replace('.',','):''}" aria-label="Prijs van een Stella in euro"></span><small id="prank">${rankText(n)}</small></div><div class="mine"><button class="btn${me.visited.has(n)?' on':''}" data-visit>${me.visited.has(n)?'✓ Bezocht':'Markeer als bezocht'}</button><button class="btn${me.fav.has(n)?' on':''}" data-fav>${me.fav.has(n)?'★ Favoriet':'☆ Favoriet'}</button></div><textarea id="note" rows="2" placeholder="Eigen notitie, bv. 'Westmalle getest, top'">${esc(me.notes[n]||'')}</textarea></div>`;
-  card.hidden=false;const pin=card.querySelector('#pin');pin.onchange=()=>{const raw=pin.value.trim().replace(',','.').replace('€','');const v=parseFloat(raw);if(raw===''||isNaN(v)||v<=0||v>30){delete me.price[n];pin.value=''}else{me.price[n]=Math.round(v*100)/100;pin.value=me.price[n].toFixed(2).replace('.',',')}savePrice();card.querySelector('#prank').textContent=rankText(n);render()};pin.onkeydown=e=>{if(e.key==='Enter')pin.blur()};
+  card.innerHTML=`<div class="band">${band}</div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">${x.b?esc(x.b):'Onbekend adres'}${x.h?' · knooppunt':''}<span class="q">${qLabel[x.q]}</span></div><h2>${esc(n)}</h2>${x.a?`<p class="addr">${esc(x.a)}</p>`:''}${blurb}${nearH}<div class="rides">${rides}</div><div class="actions">${maps}</div>${stellaOn?`<div class="stella"><label for="pin">🍺 Stella 25 cl</label><span class="eur">€<input id="pin" type="text" inputmode="decimal" placeholder="?" value="${priceOf(n)!=null?priceOf(n).toFixed(2).replace('.',','):''}" aria-label="Prijs van een Stella in euro"></span><small id="prank">${rankText(n)}</small></div>`:''}<div class="mine"><button class="btn${me.visited.has(n)?' on':''}" data-visit>${me.visited.has(n)?'✓ Bezocht':'Markeer als bezocht'}</button><button class="btn${me.fav.has(n)?' on':''}" data-fav>${me.fav.has(n)?'★ Favoriet':'☆ Favoriet'}</button></div><textarea id="note" rows="2" placeholder="Eigen notitie, bv. 'Westmalle getest, top'">${esc(me.notes[n]||'')}</textarea></div>`;
+  card.hidden=false;const pin=card.querySelector('#pin');if(pin)pin.onchange=()=>{const raw=pin.value.trim().replace(',','.').replace('€','');const v=parseFloat(raw);if(raw===''||isNaN(v)||v<=0||v>30){delete me.price[n];pin.value=''}else{me.price[n]=Math.round(v*100)/100;pin.value=me.price[n].toFixed(2).replace('.',',')}savePrice();card.querySelector('#prank').textContent=rankText(n);render()};if(pin)pin.onkeydown=e=>{if(e.key==='Enter')pin.blur()};
   const ta=card.querySelector('#note');ta.oninput=()=>{const v=ta.value.trim();if(v)me.notes[n]=v;else delete me.notes[n];saveMe()};
   if(fly&&morphT===null)flyTo(x.lat,x.lon);else render()}
 card.addEventListener('click',e=>{e.stopPropagation();
@@ -464,6 +478,22 @@ function showPrices(){stopRide();sel=null;const ps=priced(),todo=D.stations.leng
   <p class="addr">${todo} cafés hebben nog geen prijs. Prijzen worden in deze browser bewaard; deel ze met "Kopieer mijn prijzen".</p></div>`;
   card.hidden=false;render()}
 document.getElementById('priceBtn').onclick=showPrices;
+const REPO='https://github.com/DamienLy/antwerpen-cafestad';
+function applyStella(){document.getElementById('priceBtn').hidden=!stellaOn;wrap.classList.toggle('nostella',!stellaOn)}
+function showSettings(){stopRide();sel=null;
+  card.innerHTML=`<div class="band"><i style="background:var(--muted)"></i></div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">Cafékaart</div><h2>Instellingen</h2>
+  <label class="sw"><input type="checkbox" id="optStella" ${stellaOn?'checked':''}><span><b>Stella-index</b><small>Prijs van een Stella invullen per café en zien waar het het goedkoopst is.</small></span></label>
+  <h3 class="sh">Idee om de kaart beter te maken?</h3>
+  <textarea id="sug" rows="4" placeholder="Een café dat ontbreekt, een fout adres, een leuk idee…"></textarea>
+  <div class="actions"><button class="btn primary" data-sug="wa">Stuur via WhatsApp</button><button class="btn" data-sug="gh">Via GitHub</button></div>
+  <p class="addr">WhatsApp opent met je bericht klaar; kies daar naar wie je het stuurt.</p></div>`;
+  card.hidden=false;card.querySelector('#optStella').onchange=e=>{stellaOn=e.target.checked;store.set('stella',stellaOn);applyStella();render()}}
+document.getElementById('setBtn').onclick=showSettings;
+card.addEventListener('click',e=>{const b=e.target.closest('[data-sug]');if(!b)return;e.stopImmediatePropagation();
+  const txt=(card.querySelector('#sug').value||'').trim();if(!txt){card.querySelector('#sug').focus();return}
+  const url=b.dataset.sug==='wa'?'https://wa.me/?text='+encodeURIComponent('Suggestie voor de Cafékaart Antwerpen:\n'+txt):REPO+'/issues/new?title='+encodeURIComponent('Suggestie: '+txt.slice(0,60))+'&body='+encodeURIComponent(txt);
+  window.open(url,'_blank','noopener')},true);
+applyStella();
 card.addEventListener('click',e=>{
   if(e.target.closest('[data-pmode]')){e.stopImmediatePropagation();priceMode=!priceMode;store.set('pricemode',priceMode);showPrices();return}
   const ex=e.target.closest('[data-pexp]');if(ex){e.stopImmediatePropagation();const obj={};priced().forEach(x=>obj[x.n]=priceOf(x.n));const txt='STELLA '+JSON.stringify(obj);

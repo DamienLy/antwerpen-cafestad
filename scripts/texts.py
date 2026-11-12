@@ -124,7 +124,7 @@ print("line mentions:", [s['n'] for s in d['stations'] if s['t'] and re.search(r
 json.dump(d, open('data.json', 'w'), ensure_ascii=False)
 # feature tags from the researched texts
 import re as _re
-TAGS = {"terras":r"terras","muziek":r"live muziek|jazz|optred|concert|DJ","bier":r"bier|tap|brouw|craft|jenever","cocktails":r"cocktail","laat":r"tot [2-6] uur|nacht|laat"}
+TAGS = {"muziek":r"live muziek|jazz|optred|concert|DJ","cocktails":r"cocktail","laat":r"tot [2-6] uur|nacht|laat"}
 for s in d['stations']:
     t = s['t'] or ''
     s['f'] = [k for k, rx in TAGS.items() if _re.search(rx, t, _re.I)]

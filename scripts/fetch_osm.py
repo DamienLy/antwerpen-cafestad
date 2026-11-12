@@ -1,20 +1,29 @@
-"""Haalt echte OpenStreetMap-data op (draait in GitHub Actions, die wel internet hebben).
-- data/osm_pois.json: alle cafés/bars in Antwerpen met coördinaten -> om onze cafés exact te plaatsen
-- data/basemap.json: straten, water en parken voor de achtergrondkaart"""
-import json, urllib.request, urllib.parse
-URL = "https://overpass-api.de/api/interpreter"
+"""Haalt alle cafés/bars in Antwerpen uit OpenStreetMap, met openingsuren (draait in GitHub Actions, die wel internet hebben).
+Schrijft data/osm_pois.json. Daarna koppelt scripts/hours.py die aan onze cafés."""
+import json, time, urllib.request, urllib.parse
+URLS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter"]
 BBOX = "51.180,4.360,51.250,4.470"
+QUERY = f'[out:json][timeout:120];nwr["amenity"~"^(bar|pub|cafe|restaurant|biergarten|nightclub)$"]["name"]({BBOX});out center tags;'
+
 def q(query):
-    data = urllib.parse.urlencode({"data": query}).encode()
-    req = urllib.request.Request(URL, data=data, headers={"User-Agent": "antwerpen-cafestad/1.0"})
-    return json.load(urllib.request.urlopen(req, timeout=180))
-pois = q(f'[out:json][timeout:120];nwr["amenity"~"^(bar|pub|cafe|restaurant|biergarten|nightclub)$"]["name"]({BBOX});out center tags;')
-json.dump([{"name": e["tags"]["name"], "lat": e.get("lat", e.get("center", {}).get("lat")), "lon": e.get("lon", e.get("center", {}).get("lon")),
-            "street": e["tags"].get("addr:street", ""), "nr": e["tags"].get("addr:housenumber", "")} for e in pois["elements"]],
-          open("data/osm_pois.json", "w"), ensure_ascii=False)
-base = q(f'[out:json][timeout:180];(way["highway"~"^(primary|secondary|tertiary|pedestrian|residential)$"]({BBOX});'
-         f'way["natural"="water"]({BBOX});way["waterway"="riverbank"]({BBOX});way["leisure"="park"]({BBOX}););out geom;')
-json.dump([{"t": ("water" if e["tags"].get("natural") == "water" or "waterway" in e["tags"] else "park" if e["tags"].get("leisure") else e["tags"].get("highway")),
-            "n": e["tags"].get("name", ""), "g": [[round(p["lat"], 5), round(p["lon"], 5)] for p in e.get("geometry", [])]} for e in base["elements"]],
-          open("data/basemap.json", "w"), ensure_ascii=False)
-print(len(pois["elements"]), "pois,", len(base["elements"]), "basemap ways")
+    last = None
+    for url in URLS:
+        for attempt in range(2):
+            try:
+                data = urllib.parse.urlencode({"data": query}).encode()
+                req = urllib.request.Request(url, data=data, headers={"User-Agent": "cafekaart-antwerpen/1.0 (github.com)"})
+                return json.load(urllib.request.urlopen(req, timeout=180))
+            except Exception as e:
+                last = e; print("mislukt:", url, e); time.sleep(10)
+    raise last
+
+pois = q(QUERY)
+out = []
+for e in pois["elements"]:
+    t = e["tags"]
+    out.append({"name": t["name"], "amenity": t.get("amenity", ""),
+                "lat": e.get("lat", e.get("center", {}).get("lat")), "lon": e.get("lon", e.get("center", {}).get("lon")),
+                "street": t.get("addr:street", ""), "nr": t.get("addr:housenumber", ""),
+                "hours": t.get("opening_hours", ""), "website": t.get("website", t.get("contact:website", ""))})
+json.dump(out, open("data/osm_pois.json", "w"), ensure_ascii=False, indent=0)
+print(len(out), "zaken,", sum(1 for o in out if o["hours"]), "met openingsuren")

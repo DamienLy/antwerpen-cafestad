@@ -1,4 +1,4 @@
-name: OSM-data verversen
+name: Openingsuren verversen (OpenStreetMap)
 on: { workflow_dispatch: {} }
 permissions: { contents: write }
 jobs:
@@ -9,5 +9,5 @@ jobs:
       - run: python3 scripts/fetch_osm.py
       - run: |
           git config user.name "github-actions"; git config user.email "actions@github.com"
-          git add data/ && git commit -m "OSM-data ververst" || echo "geen wijzigingen"
+          git add data/ && git commit -m "Openingsuren ververst uit OpenStreetMap" || echo "geen wijzigingen"
           git push

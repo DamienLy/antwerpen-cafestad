@@ -62,8 +62,9 @@ base["poi"] = [["Kathedraal",51.2203,4.4015],["Het Steen",51.2227,4.3972],["MAS"
  ["Station Berchem",51.1993,4.4325],["Permeke",51.2219,4.4200],["Sint-Pauluskerk",51.2236,4.4005]]
 base["labels"] = [l for l in base["labels"] if l[3] != "poi" or l[0] in ("Stadspark","Park Spoor Noord","Leien","Ring R1")]
 
-base['osm'] = json.load(open('osm.json'))
 import os
+base['osm'] = json.load(open('osm.json'))
+if os.path.exists('poster.json'): base['poster'] = json.load(open('poster.json'))
 if os.path.exists('routes.json'): base['routes'] = json.load(open('routes.json'))
 if os.environ.get('PREVIEW'): base['preview'] = True
 for k in ('river','docks','parks','leien','ring','rail','meir','main','minor','squares'): base.pop(k, None)

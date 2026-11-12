@@ -1,0 +1,218 @@
+{
+"https://www.schlouk-map.com/en/places/cafe-jozef": {
+"title": "Cafe Jozef",
+"addr": "Koningin Astridplein 43",
+"hours": "Mo 07:00-00:30; Tu 07:00-00:30; We 07:00-00:30; Th 07:00-00:30; Fr 07:00-05:00; Sa 07:00-05:00; Su 07:00-00:30",
+"cafe": "Café Jozef"
+},
+"https://www.schlouk-map.com/en/places/de-vagant": {
+"title": "De Vagant",
+"addr": "Overpoortstraat 5",
+"hours": "Mo 16:00-06:00; Tu 16:00-06:00; We 16:00-06:00; Th 16:00-00:00; Fr off; Sa off; Su 21:00-06:00",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/cafe-des-arts": {
+"title": "Café des Arts",
+"addr": "3 Rue Saint-Guilhem",
+"hours": "Mo 12:00-23:00; Tu 12:00-23:00; We 12:00-23:00; Th 12:00-23:00; Fr 12:00-23:00; Sa 12:00-23:00; Su 12:00-23:00",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/oud-arsenaal": {
+"title": "Oud Arsenaal",
+"addr": "Maria Pijpelincxstraat 4",
+"hours": "Mo off; Tu off; We 10:00-22:00; Th 10:00-22:00; Fr 10:00-23:00; Sa 07:30-19:30; Su 07:30-19:30",
+"cafe": "Oud Arsenaal"
+},
+"https://www.schlouk-map.com/en/places/boer-van-tienen": {
+"title": "Boer van Tienen",
+"addr": "Mechelseplein 6",
+"hours": "Mo 09:00-02:00; Tu 09:00-02:00; We 09:00-02:00; Th 09:00-02:00; Fr 09:00-02:00; Sa 10:00-03:00; Su 10:00-21:00",
+"cafe": "Boer van Tienen"
+},
+"https://www.schlouk-map.com/en/places/the-joker": {
+"title": "The Joker",
+"addr": "2 Preston Rd",
+"hours": "Mo 4:00 pm - 11:00 pm; Tu 4:00 pm - 11:00 pm; We 12:00 pm - 12:00 am; Th 12:00 pm - 12:00 am; Fr 12:00 pm - 1:00 am; Sa 12:00 pm - 1:00 am; Su 12:00 pm - 11:00 pm",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/cafe-baron": {
+"title": "Cafe Baron",
+"addr": "Statiestraat 24",
+"hours": "Mo 14:00-05:00; Tu 14:00-05:00; We 14:00-05:00; Th 14:00-05:00; Fr 14:00-05:00; Sa 14:00-05:00; Su 14:00-05:00",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/hopper": {
+"title": "Hopper",
+"addr": "43 Cours Gambetta",
+"hours": "Mo 07:00-01:00; Tu 07:00-01:00; We 07:00-01:00; Th 07:00-01:00; Fr 07:00-01:00; Sa 07:00-01:00; Su 08:30-01:00",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/chatleroi": {
+"title": "Chatleroi",
+"addr": "Graaf van Hoornestraat 2",
+"hours": "Mo 11:00-02:00; Tu 11:00-02:00; We 11:00-02:00; Th 11:00-02:00; Fr 11:00-02:00; Sa 11:00-02:00; Su 10:00-00:00",
+"cafe": "Chatleroi"
+},
+"https://www.schlouk-map.com/en/places/bar-dhenri": {
+"title": "Bar d'Henri",
+"addr": "Montignystraat 21",
+"hours": "Mo off; Tu off; We off; Th 17:00-00:00; Fr 17:00-00:00; Sa 17:00-00:00; Su off",
+"cafe": "Bar d'Henri"
+},
+"https://www.schlouk-map.com/en/places/cafe-den-draak": {
+"title": "Café Den Draak",
+"addr": "Draakplaats 1",
+"hours": "Mo off; Tu 16:00-01:00; We 16:00-01:00; Th 16:00-01:00; Fr 16:00-03:00; Sa 16:00-03:00; Su 14:00-01:00",
+"cafe": "Den Draak"
+},
+"https://www.schlouk-map.com/en/places/cafe-gorillaz": {
+"title": "Café Gorillaz",
+"addr": "Dageraadplaats 14",
+"hours": "Mo off; Tu 15:00-02:00; We 15:00-02:00; Th 15:00-02:00; Fr 15:00-02:00; Sa 14:00-03:00; Su 14:00-03:00",
+"cafe": "Gorillaz"
+},
+"https://www.schlouk-map.com/en/places/bobby": {
+"title": "BOBBY",
+"addr": "Isabellalei 161",
+"hours": "Mo off; Tu 16:00-01:00; We 16:00-01:00; Th 16:00-01:00; Fr 16:00-02:00; Sa 16:00-01:00; Su off",
+"cafe": "Bobby"
+},
+"https://www.schlouk-map.com/en/places/tram-3": {
+"title": "Tram 3",
+"addr": "Oude Koornmarkt 38",
+"hours": "Mo off; Tu off; We 12:00-01:00; Th 12:00-01:00; Fr 12:00-01:00; Sa 12:00-01:00; Su 12:00-01:00",
+"cafe": "Tram 3"
+},
+"https://www.schlouk-map.com/en/places/cafe-au-lait": {
+"title": "Café au lait",
+"addr": "Oude Beurs 8",
+"hours": "Mo off; Tu 16:00-02:00; We 16:00-02:00; Th 16:00-02:00; Fr 16:00-03:00; Sa 16:00-03:00; Su 14:00-02:00",
+"cafe": "Café au lait"
+},
+"https://www.schlouk-map.com/en/places/de-ware-jacob": {
+"title": "De Ware Jacob",
+"addr": "Vlasmarkt 19",
+"hours": "Mo off; Tu 15:00-00:00; We 15:00-00:00; Th 15:00-00:00; Fr 15:00-01:00; Sa 14:00-01:00; Su 14:00-00:00",
+"cafe": "De Ware Jacob"
+},
+"https://www.schlouk-map.com/en/places/cafe-corso": {
+"title": "Cafe Corso",
+"addr": "Oudezijds Achterburgwal 26",
+"hours": "Mo 11:00-01:00; Tu 11:00-01:00; We 11:00-01:00; Th 11:00-01:00; Fr 11:00-03:00; Sa 11:00-03:00; Su 11:00-01:00",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/pelikaan": {
+"title": "Pelikaan",
+"addr": "Melkmarkt 14",
+"hours": "Mo 08:30-03:00; Tu 08:30-03:00; We 08:30-03:00; Th 08:30-03:00; Fr 08:30-03:00; Sa 08:30-03:00; Su 08:30-03:00",
+"cafe": "Café Pelikaan"
+},
+"https://www.schlouk-map.com/en/places/beautiful-planet": {
+"title": "Beautiful Planet",
+"addr": "De Coninckplein 12/16",
+"hours": "Mo off; Tu 16:00-23:00; We 16:00-23:00; Th 16:00-23:00; Fr 14:00-05:00; Sa 14:00-01:00; Su off",
+"cafe": "Beautiful Planet"
+},
+"https://www.schlouk-map.com/en/places/de-kroon": {
+"title": "De Kroon",
+"addr": "Rembrandtplein 17-I",
+"hours": "Mo 16:00-01:00; Tu 16:00-01:00; We 16:00-01:00; Th 16:00-01:00; Fr 16:00-03:00; Sa 16:00-03:00; Su 16:00-01:00",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/bar-leon": {
+"title": "bar Leon",
+"addr": "Reuzenstraat 23",
+"hours": "Mo 15:00-01:00; Tu 15:00-01:00; We 15:00-01:00; Th 15:00-01:00; Fr 15:00-02:00; Sa 13:00-02:00; Su 13:00-00:00",
+"cafe": "Bar Leon"
+},
+"https://www.schlouk-map.com/en/places/leon": {
+"title": "Léon",
+"addr": "50 Rue Léon",
+"hours": "Mo 17:00-01:30; Tu 17:00-01:30; We 17:00-01:30; Th 17:00-00:00; Fr 16:30-01:30; Sa 16:30-01:30; Su off",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/heilig-huisken": {
+"title": "Heilig Huisken",
+"addr": "Kloosterstraat 155",
+"hours": "Mo 15:00-00:00; Tu off; We 15:00-00:00; Th 12:00-00:00; Fr 12:00-03:00; Sa 12:00-03:00; Su 12:00-00:00",
+"cafe": "Heilig Huisken"
+},
+"https://www.schlouk-map.com/en/places/dr-beer": {
+"title": "Dr. Beer",
+"addr": "Adriaan Brouwerstraat 31 GLV",
+"hours": "Mo off; Tu off; We 16:00-00:00; Th 16:00-00:00; Fr 16:00-01:00; Sa 13:00-01:00; Su 13:00-22:00",
+"cafe": "Dr. Beer"
+},
+"https://www.schlouk-map.com/en/places/bar-du-port": {
+"title": "Bar Du Port",
+"addr": "Napoleonkaai 53",
+"hours": "Mo 09:00-23:00; Tu 09:00-23:00; We off; Th off; Fr 09:00-23:00; Sa 09:00-23:00; Su 09:00-23:00",
+"cafe": "Bar du Port"
+},
+"https://www.schlouk-map.com/en/places/cafe-boekowski": {
+"title": "Café Boekowski",
+"addr": "Bolivarplaats 4",
+"hours": "Mo off; Tu off; We 11:45-23:45; Th 11:45-01:00; Fr 11:45-01:00; Sa 13:00-01:00; Su 13:00-23:00",
+"cafe": "Boekowski"
+},
+"https://www.schlouk-map.com/en/places/borze-cafe": {
+"title": "Borze Café",
+"addr": "Borzestraat 30",
+"hours": "Mo 16:00-00:00; Tu off; We off; Th 16:00-00:00; Fr 16:00-00:00; Sa 14:00-00:00; Su 16:00-00:00",
+"cafe": "Borze café"
+},
+"https://www.schlouk-map.com/en/places/the-northerner": {
+"title": "The Northerner",
+"addr": "Wijngaardstraat 7",
+"hours": "Mo off; Tu 17:00-01:00; We 17:00-00:00; Th 17:00-01:00; Fr 14:00-01:00; Sa 12:00-01:00; Su 12:00-01:00",
+"cafe": "The Northerner"
+},
+"https://www.schlouk-map.com/en/places/marmite": {
+"title": "Marmite",
+"addr": "Torfbrug 8",
+"hours": "Mo 20:00-03:00; Tu 20:00-03:00; We 20:00-03:00; Th 20:00-03:00; Fr 20:00-03:00; Sa 20:00-03:00; Su off",
+"cafe": "Marmite"
+},
+"https://www.schlouk-map.com/en/places/fetish-cafe": {
+"title": "Fetish Café",
+"addr": "Kleine Pieter Potstraat 8",
+"hours": "Mo off; Tu off; We off; Th off; Fr 20:00-03:00; Sa 20:00-03:00; Su off",
+"cafe": "Fetish Café"
+},
+"https://www.schlouk-map.com/en/places/cut": {
+"title": "Cut",
+"addr": "Grote Pieter Potstraat 21",
+"hours": "Mo 18:00-01:00; Tu off; We off; Th 16:00-01:00; Fr 16:00-01:00; Sa 16:00-01:00; Su 16:00-01:00",
+"cafe": "CUT"
+},
+"https://www.schlouk-map.com/en/places/barracuda": {
+"title": "Barracuda",
+"addr": "12 Cours de la Somme",
+"hours": "Mo off; Tu 19:00-02:00; We 19:00-02:00; Th 19:00-02:00; Fr 19:00-02:00; Sa 19:00-02:00; Su 19:00-02:00",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/copain": {
+"title": "Copain",
+"addr": "Avenue Rogier 262",
+"hours": "Mo 16:00-01:00; Tu 16:00-01:00; We 16:00-01:00; Th off; Fr 16:00-00:00; Sa 18:00-03:00; Su off",
+"cafe": null
+},
+"https://www.schlouk-map.com/en/places/papa-jos": {
+"title": "Papa Jos'",
+"addr": "Blindestraat 39",
+"hours": "Mo 11:00-01:00; Tu 11:00-01:00; We 11:00-01:00; Th 11:00-01:00; Fr 11:00-01:00; Sa 12:00-01:00; Su off",
+"cafe": "Papa Jos"
+},
+"https://www.schlouk-map.com/en/places/la-dolce-vita": {
+"title": "La Dolce Vita",
+"addr": "Stadswaag 11",
+"hours": "Mo 18:00-06:00; Tu 18:00-06:00; We 18:00-06:00; Th 18:00-06:00; Fr 18:00-06:00; Sa 18:00-06:00; Su off",
+"cafe": "La Dolce Vita"
+},
+"https://www.schlouk-map.com/en/places/t-waagstuk": {
+"title": "t Waagstuk",
+"addr": "Stadswaag 20",
+"hours": "Mo 16:00-01:00; Tu 16:00-01:00; We 16:00-01:00; Th 16:00-01:00; Fr 16:00-02:00; Sa 16:00-02:00; Su 16:00-01:00",
+"cafe": "'t Waagstuk"
+}
+}

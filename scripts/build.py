@@ -78,7 +78,7 @@ head=('<!doctype html><html lang="nl"><head><meta charset="utf-8">'
  '<meta name="apple-mobile-web-app-title" content="Cafékaart">'
  '<meta name="description" content="De 138 cafés van de Antwerpen-caféstad-poster op de echte kaart.">'
  '<meta property="og:title" content="Cafékaart Antwerpen"><meta property="og:description" content="De metrokaart van de poster op de echte stad: 12 lijnen, 138 cafés.">'
- f'<meta property="og:image" content="{SITE}preview.png"><meta property="og:url" content="{SITE}"><meta property="og:type" content="website">'
+ f'<meta property="og:image" content="{SITE}preview.png?v=2"><meta property="og:url" content="{SITE}"><meta property="og:type" content="website">'
  '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8D%BA%3C/text%3E%3C/svg%3E">'
  '</head><body>')
 i=html.index('<style>')

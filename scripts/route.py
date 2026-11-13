@@ -88,6 +88,7 @@ for n in st:   # cafés are not through-roads
 order = {l['id']: i for i, l in enumerate(d['lines'])}
 canon = lambda u, v: (u, v) if str(u) < str(v) else (v, u)
 
+SHORT = {}
 def route_all(bonus):
     """route every line; edges already used by other lines are cheaper (bundling)"""
     edges, detours = {}, []
@@ -101,8 +102,16 @@ def route_all(bonus):
             if na == nb: continue
             p = nx.shortest_path(G, na, nb, weight=w)
             straight = math.dist(coord[na], coord[nb])
-            routed = sum(math.dist(coord[x], coord[y]) for x, y in zip(p, p[1:]))
-            if routed > 1.5 * straight + 100: p = [na, nb]; detours.append((lid, a, b))
+            plen = lambda q: sum(math.dist(coord[x], coord[y]) for x, y in zip(q, q[1:]))
+            routed = plen(p)
+            if straight < 70:                       # next-door cafés: a short straight link reads better
+                p = [na, nb]
+            else:
+                key_ = (na, nb)
+                if key_ not in SHORT: SHORT[key_] = nx.shortest_path(G, na, nb, weight=lambda u, v, a_: math.dist(coord[u], coord[v]))
+                q = SHORT[key_]; lq = plen(q)
+                if routed > 1.25 * lq + 60: p, routed = q, lq     # preferring big streets cost too much: take the plainly shortest streets
+                if routed > 2.2 * straight + 150: p = [na, nb]; detours.append((lid, a, b, round(routed), round(straight)))
             for u, v in zip(p, p[1:]): E.add(canon(u, v))
         edges[lid] = E
     return edges, detours
@@ -113,7 +122,7 @@ for it in range(3):
     for lid, E in edges.items():
         for e in E: use.setdefault(e, set()).add(lid)
     edges, detours = route_all(use)
-print('omwegen vervangen door rechte lijn:', len(detours))
+print('omwegen vervangen door rechte lijn:', len(detours)); [print('  ', x) for x in detours]
 
 users = {}
 for lid, E in edges.items():

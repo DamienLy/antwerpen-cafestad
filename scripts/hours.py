@@ -1,5 +1,6 @@
 """Openingsuren per café in data.json (s['o'], OpenStreetMap-notatie).
 Bronnen, beste eerst:
+0. hours_src/extra.json    - eigen website van het café, InTravel (adres nagekeken) en openingsuren.vlaanderen (uitgelezen beeld)
 1. hours_src/schlouk.json  - Schlouk Map, per café nagekeken op naam én adres (opgehaald via de GitHub-workflow 'Pagina's ophalen')
 2. data/osm_pois.json      - OpenStreetMap, dichtstbijzijnde zaak met dezelfde naam binnen 150 m (workflow 'Openingsuren verversen')"""
 import json, math, re, unicodedata, sys, os
@@ -15,9 +16,12 @@ if os.path.exists('hours_src/schlouk.json'):
     for r in json.load(open('hours_src/schlouk.json')).values():
         if r.get('cafe') and re.search(r'\d\d:\d\d', r['hours']) and not re.search(r'[ap]m', r['hours']): sch[r['cafe']] = r['hours']
 pois = json.load(open(osm_src)) if os.path.exists(osm_src) else []
-src = {'schlouk': 0, 'osm': 0}
+extra = json.load(open('hours_src/extra.json')) if os.path.exists('hours_src/extra.json') else {}
+src = {'extra': 0, 'schlouk': 0, 'osm': 0}
 for s in d['stations']:
     s.pop('o', None); s.pop('os', None)
+    if s['n'] in extra:
+        s['o'] = extra[s['n']]['o']; s['os'] = extra[s['n']]['src']; src['extra'] += 1; continue
     if s['n'] in sch:
         s['o'] = sch[s['n']]; s['os'] = 'Schlouk Map'; src['schlouk'] += 1; continue
     best = None

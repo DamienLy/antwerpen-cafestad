@@ -15,6 +15,6 @@ for line in open('fetch/urls.txt'):
         open('fetch/out/' + fn, 'wb').write(data); ok[url] = fn
     except Exception as e:
         print('mislukt', url, e)
-    time.sleep(2.5)
+    time.sleep(0.3)
 json.dump(ok, open('fetch/out/index.json', 'w'), indent=0)
 print(len(ok), "opgehaald")

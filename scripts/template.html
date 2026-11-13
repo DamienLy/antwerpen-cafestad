@@ -517,7 +517,7 @@ function pick(n,fly){sel=n;const x=st[n];
   const blurb=x.t?`<p class="blurb">${esc(x.t)}</p>`:`<p class="blurb${x.a?'':' soft'}">${esc(x.t||'')}</p>`;
   const near=x.q==='geschat'?[]:D.stations.filter(o=>o.n!==n&&o.q!=='geschat').map(o=>[o,Math.hypot((o.lat-x.lat)*111200,(o.lon-x.lon)*111200*C)]).sort((a,b)=>a[1]-b[1]).slice(0,3);
   const nearH=near.length?`<div class="near"><span>In de buurt</span>${near.map(([o,d])=>`<button data-go="${esc(o.n)}">${esc(o.n)}<small>${fmtD(d)}</small></button>`).join('')}</div>`:'';
-  const qq=encodeURIComponent(n+' '+x.a.split(' (')[0]+' Antwerpen'), aq=encodeURIComponent(x.a?x.a.split(' (')[0]+', Antwerpen, België':'');
+  const qq=encodeURIComponent(n+' '+(x.a||'').split(' (')[0]+' Antwerpen'), aq=encodeURIComponent(x.a?x.a.split(' (')[0]+', Antwerpen, België':'');
   const maps=x.a?`<a class="btn primary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&query=${qq}">Google Maps ↗</a><a class="btn" target="_blank" rel="noopener noreferrer" href="https://maps.apple.com/?q=${encodeURIComponent(n)}&address=${aq}">Apple Kaarten ↗</a><button class="btn" data-copy="${esc(x.a.split(' (')[0]+', Antwerpen')}">Kopieer adres</button>`:'';
   card.innerHTML=`<div class="band">${band}</div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">${x.b?esc(x.b):'Onbekend adres'}${x.h?' · knooppunt':''}<span class="q">${qLabel[x.q]}</span></div><h2>${esc(n)}</h2>${x.a?`<p class="addr">${esc(x.a)}</p>`:''}${x.o?hoursLine(x):''}${blurb}${nearH}<div class="rides">${rides}</div><div class="actions">${maps}</div>${stellaOn?`<div class="stella"><label for="pin">🍺 Stella 25 cl</label><span class="eur">€<input id="pin" type="text" inputmode="decimal" placeholder="?" value="${priceOf(n)!=null?priceOf(n).toFixed(2).replace('.',','):''}" aria-label="Prijs van een Stella in euro"></span><small id="prank">${rankText(n)}</small></div>`:''}<div class="mine"><button class="btn${me.visited.has(n)?' on':''}" data-visit>${me.visited.has(n)?'✓ Bezocht':'Markeer als bezocht'}</button><button class="btn${me.fav.has(n)?' on':''}" data-fav>${me.fav.has(n)?'★ Favoriet':'☆ Favoriet'}</button></div><textarea id="note" rows="2" placeholder="Eigen notitie, bv. 'Westmalle getest, top'">${esc(me.notes[n]||'')}</textarea></div>`;
   card.hidden=false;const pin=card.querySelector('#pin');if(pin)pin.onchange=()=>{const raw=pin.value.trim().replace(',','.').replace('€','');const v=parseFloat(raw);if(raw===''||isNaN(v)||v<=0||v>30){delete me.price[n];pin.value=''}else{me.price[n]=Math.round(v*100)/100;pin.value=me.price[n].toFixed(2).replace('.',',')}savePrice();card.querySelector('#prank').textContent=rankText(n);render()};if(pin)pin.onkeydown=e=>{if(e.key==='Enter')pin.blur()};
@@ -540,7 +540,7 @@ function showLine(id){stopRide();sel=null;const l=LN[id];let km=0;for(let i=1;i<
   card.innerHTML=`<div class="band"><i style="background:${l.c}"></i></div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">Lijn<span class="q">${l.s.length} cafés · ${km.toFixed(1)} km</span></div><h2 style="color:${l.c}">Lijn ${names[id]}</h2><p class="addr">${esc(l.s[0])} → ${esc(l.s[l.s.length-1])}</p><p class="blurb">Loopt door ${hoods.slice(0,5).join(', ')}${hoods.length>5?' en meer':''}. ${known} van de ${l.s.length} cafés staan op hun echte adres.</p><p class="addr">Te voet ongeveer ${Math.round(km*1.3/4.5*60)} min stappen (excl. pintjes) · ${l.s.filter(n=>me.visited.has(n)).length}/${l.s.length} bezocht</p><div class="actions">${routeLinks(l)}</div><div class="actions"><button class="btn primary" data-ride="${id}">▶ Rijd mee</button><button class="btn" data-solo="${id}">${focusLine===id?'Toon alle lijnen':'Toon enkel deze lijn'}</button></div></div>`;
   card.hidden=false;render()}
 function routeLinks(l){const s=l.s.filter(n=>st[n].a),parts=[];for(let i=0;i<s.length-1;i+=9){parts.push(s.slice(i,i+10))}
-  const ad=n=>encodeURIComponent(n+', '+st[n].a.split(' (')[0]+', Antwerpen');
+  const ad=n=>encodeURIComponent(st[n].a?n+', '+st[n].a.split(' (')[0]+', Antwerpen':st[n].lat+','+st[n].lon);
   return parts.map((p,k)=>`<a class="btn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=${ad(p[0])}&destination=${ad(p[p.length-1])}${p.length>2?'&waypoints='+p.slice(1,-1).map(ad).join('%7C'):''}">🚶 Route${parts.length>1?' deel '+(k+1):''} in Google Maps ↗</a>`).join('')}
 function startRide(id){stopRide();const s=LN[id].s;let i=0;ride={id,t:null};focusLine=id;syncChips();
   const go=()=>{if(!ride)return;pick(s[i],true);i++;if(i<s.length)ride.t=setTimeout(go,2200);else ride=null};go()}
@@ -597,7 +597,7 @@ function showSettings(){stopRide();sel=null;
   <p class="addr">WhatsApp opent met je bericht klaar; kies daar naar wie je het stuurt.</p></div>`;
   card.hidden=false;card.querySelector('#optStella').onchange=e=>{stellaOn=e.target.checked;store.set('stella',stellaOn);applyStella();render()}}
 document.getElementById('setBtn').onclick=showSettings;
-card.addEventListener('click',e=>{const sb=e.target.closest('[data-style]');if(sb){e.stopImmediatePropagation();setStyle(sb.dataset.style);card.querySelectorAll('.sty').forEach(x=>x.setAttribute('aria-checked',x===sb));return}
+card.addEventListener('click',e=>{const sb=e.target.closest('.sty[data-style]');if(sb){e.stopImmediatePropagation();setStyle(sb.dataset.style);card.querySelectorAll('.sty').forEach(x=>x.setAttribute('aria-checked',x===sb));return}
   const b=e.target.closest('[data-sug]');if(!b)return;e.stopImmediatePropagation();
   const txt=(card.querySelector('#sug').value||'').trim();if(!txt){card.querySelector('#sug').focus();return}
   const url=b.dataset.sug==='wa'?'https://wa.me/?text='+encodeURIComponent('Suggestie voor de Cafékaart Antwerpen:\n'+txt):REPO+'/issues/new?title='+encodeURIComponent('Suggestie: '+txt.slice(0,60))+'&body='+encodeURIComponent(txt);
@@ -643,11 +643,12 @@ const up=e=>{ptr.delete(e.pointerId);if(ptr.size<2)pinch=0;if(moved>4)render()};
 svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);
 svg.addEventListener('click',e=>{if(moved>4)return;untip();
   const r=svg.getBoundingClientRect(),mx=view.x+(e.clientX-r.left)/r.width*view.w,my=view.y+(e.clientY-r.top)/r.height*view.h,s=scale();
-  const tn=e.target.getAttribute&&e.target.getAttribute('data-n');
-  if(tn){stopRide();pick(tn,true);return}
+  const tEl=e.target.closest?e.target.closest('[data-n]'):null,tn=tEl&&tEl.getAttribute('data-n');
+  if(tn&&(tEl.tagName==='text'||tEl.tagName==='tspan')){stopRide();pick(tn,true);return}
   let best=null,bd=(lastPT==='mouse'?16:30)*s;
   D.stations.forEach(x=>{if(!x.l.some(active))return;const [cx,cy]=pos(x),d=Math.hypot(cx-mx,cy-my);if(d<bd){bd=d;best=x.n}});
   if(best){stopRide();pick(best,true);return}
+  if(tn){stopRide();pick(tn,true);return}
   const ln=e.target.getAttribute&&e.target.getAttribute('data-line');
   if(ln){showLine(ln);return}
   if(!card.hidden)close()});

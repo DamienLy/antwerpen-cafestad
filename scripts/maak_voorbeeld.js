@@ -15,5 +15,5 @@ await p.evaluate(()=>{
   Object.assign(o.style,{position:'fixed',left:'0',top:'0',bottom:'0',width:'420px',padding:'64px 0 0 52px',boxSizing:'border-box',
     background:'linear-gradient(90deg,rgba(250,248,243,1) 0%,rgba(250,248,243,.97) 70%,rgba(250,248,243,0) 100%)',zIndex:50});
   document.body.appendChild(o)});
-await p.waitForTimeout(600);await p.screenshot({path:'/home/claude/antwerpen-cafestad/docs/preview.png'});
+await p.waitForTimeout(600);await p.screenshot({path:'/home/claude/antwerpen-cafestad/docs/preview.png'});await p.screenshot({path:'/home/claude/antwerpen-cafestad/docs/preview.jpg',type:'jpeg',quality:84});
 console.log(JSON.stringify(errs));await b.close()})();

@@ -6,8 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 fetch/fetch_pages.py
+        with: { ref: fetch }
+      - run: rm -rf fetch/out && python3 fetch/fetch_pages.py
       - run: |
           git config user.name "github-actions"; git config user.email "actions@github.com"
-          git add fetch/ && git commit -m "Pagina's opgehaald" || echo "geen wijzigingen"
-          git push
+          git add -A fetch/ && git commit -m "Pagina's opgehaald" || echo "geen wijzigingen"
+          git push origin HEAD:fetch

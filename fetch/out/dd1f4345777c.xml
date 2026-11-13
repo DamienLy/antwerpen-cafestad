@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://www.schlouk-map.com/sitemap_cities.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.schlouk-map.com/sitemap_places.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.schlouk-map.com/sitemap_places_actions.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.schlouk-map.com/sitemap_drinks.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.schlouk-map.com/sitemap_posts.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.schlouk-map.com/sitemap_events.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.schlouk-map.com/sitemap_football_fixtures.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.schlouk-map.com/sitemap_static.xml</loc>
+  </sitemap>
+</sitemapindex>

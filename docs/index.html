@@ -183,6 +183,14 @@ svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b24
 .sw input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent);flex:none}
 .sw span{display:flex;flex-direction:column;gap:2px;font-size:.85rem}.sw small{color:var(--muted);font-size:.74rem}
 .sh{font:700 .85rem var(--body);margin:16px 0 6px}
+.styles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sty{display:flex;gap:8px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:7px 8px;cursor:pointer;font:inherit}
+.sty[aria-checked="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sty:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sty i{position:relative;flex:none;width:34px;height:34px;border-radius:7px;overflow:hidden;border:1px solid var(--line)}
+.sty i b{position:absolute;left:-4px;right:-4px;height:4px;transform:rotate(-24deg);border-radius:2px}
+.sty i b:first-child{top:11px}.sty i b:last-child{top:21px;transform:rotate(18deg)}
+.sty span{display:flex;flex-direction:column;gap:1px;font-size:.8rem;min-width:0}.sty small{color:var(--muted);font-size:.68rem}
 #sug{width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:9px;padding:8px 10px;font:.85rem var(--body);resize:vertical}
 .hours{font:600 .82rem var(--body);margin:2px 0 8px;display:flex;flex-direction:column;gap:1px}
 .hours small{font-weight:400;color:var(--muted);font-size:.74rem}
@@ -206,7 +214,7 @@ svg[data-style=neon]{--land:#0d0a1a;--water:#17123c;--park:#0f2520;--minor:#2b24
   <div class="key"><span><i class="dot"></i>adres gevonden</span><span><i class="dot g"></i>positie geschat</span><span>Kaart © OpenStreetMap-bijdragers</span></div>
   <div id="lmode" hidden><span class="ml">Lijnen</span><button data-lm="nu">Nu</button><button data-lm="glad">Vloeiend</button><button data-lm="straat">Langs de straten</button><button data-lm="metro">Metrohoeken</button></div>
   <div id="morph" hidden><button id="mplay" class="btn primary">▶ Speel af</button><span class="ml">Poster</span><input id="mt" type="range" min="0" max="1000" value="0" aria-label="Van poster naar echte kaart"><span class="ml">Echte kaart</span></div>
-  <div class="levels" role="group" aria-label="Kaartstijl"><button data-sty="detail">Detail</button><button data-sty="chalk">Krijtbord</button><button data-sty="pirate">Schatkaart</button><button data-sty="neon">Neon</button></div><div class="cartouche" aria-hidden="true"><b>Caerte der Herberghen</b><span>van de vermaerde Stadt Antwerpen</span><i>✕ = goedkoopste pint · Anno 2026</i></div>
+  <div class="cartouche" aria-hidden="true"><b>Caerte der Herberghen</b><span>van de vermaerde Stadt Antwerpen</span><i>✕ = goedkoopste pint · Anno 2026</i></div>
   <div class="zoom"><button id="zi" aria-label="Inzoomen">+</button><button id="zo" aria-label="Uitzoomen">−</button><button id="zf" aria-label="Hele kaart">⤢</button></div>
 </div>
 <script>
@@ -581,13 +589,16 @@ function applyStella(){document.getElementById('priceBtn').hidden=!stellaOn;wrap
 function showSettings(){stopRide();sel=null;
   card.innerHTML=`<div class="band"><i style="background:var(--muted)"></i></div><button class="x" aria-label="Sluiten">×</button><div class="cbody"><div class="eyebrow">Cafékaart</div><h2>Instellingen</h2>
   <label class="sw"><input type="checkbox" id="optStella" ${stellaOn?'checked':''}><span><b>Stella-index</b><small>Prijs van een Stella invullen per café en zien waar het het goedkoopst is.</small></span></label>
+  <h3 class="sh">Kaartstijl</h3>
+  <div class="styles" role="radiogroup" aria-label="Kaartstijl">${[['detail','Detail','Nette stadskaart','#f6f4ef','#d2c8b2','#e8901e'],['chalk','Krijtbord','Groen bord, krijtstraten','#25322c','#cfc9b8','#f4f1e8'],['pirate','Schatkaart','Perkament en zeeslangen','#ecd8a8','#8a6234','#b5332b'],['neon','Neon','Gloeiend in het donker','#0d0a1a','#ff4fae','#2ee6ff']].map(([k,n,d,a,b,c])=>{const cur=(morphT!==null&&savedStyle?savedStyle:mapStyle)===k;return `<button class="sty" role="radio" aria-checked="${cur}" data-style="${k}"><i style="background:${a}"><b style="background:${b}"></b><b style="background:${c}"></b></i><span><b>${n}</b><small>${d}</small></span></button>`}).join('')}</div>
   <h3 class="sh">Idee om de kaart beter te maken?</h3>
   <textarea id="sug" rows="4" placeholder="Een café dat ontbreekt, een fout adres, een leuk idee…"></textarea>
   <div class="actions"><button class="btn primary" data-sug="wa">Stuur via WhatsApp</button><button class="btn" data-sug="gh">Via GitHub</button></div>
   <p class="addr">WhatsApp opent met je bericht klaar; kies daar naar wie je het stuurt.</p></div>`;
   card.hidden=false;card.querySelector('#optStella').onchange=e=>{stellaOn=e.target.checked;store.set('stella',stellaOn);applyStella();render()}}
 document.getElementById('setBtn').onclick=showSettings;
-card.addEventListener('click',e=>{const b=e.target.closest('[data-sug]');if(!b)return;e.stopImmediatePropagation();
+card.addEventListener('click',e=>{const sb=e.target.closest('[data-style]');if(sb){e.stopImmediatePropagation();setStyle(sb.dataset.style);card.querySelectorAll('.sty').forEach(x=>x.setAttribute('aria-checked',x===sb));return}
+  const b=e.target.closest('[data-sug]');if(!b)return;e.stopImmediatePropagation();
   const txt=(card.querySelector('#sug').value||'').trim();if(!txt){card.querySelector('#sug').focus();return}
   const url=b.dataset.sug==='wa'?'https://wa.me/?text='+encodeURIComponent('Suggestie voor de Cafékaart Antwerpen:\n'+txt):REPO+'/issues/new?title='+encodeURIComponent('Suggestie: '+txt.slice(0,60))+'&body='+encodeURIComponent(txt);
   window.open(url,'_blank','noopener')},true);
@@ -643,9 +654,7 @@ svg.addEventListener('click',e=>{if(moved>4)return;untip();
 const ctr=f=>{const r=svg.getBoundingClientRect();zoomAt(f,r.left+r.width/2,r.top+r.height/2)};
 document.getElementById('zi').onclick=()=>ctr(1/1.4);document.getElementById('zo').onclick=()=>ctr(1.4);document.getElementById('zf').onclick=fit;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!card.hidden)close()});
-const lvBtns=[...document.querySelectorAll('.levels button')];
-const syncLv=()=>lvBtns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.sty===mapStyle));
-lvBtns.forEach(b=>b.onclick=e=>{e.stopPropagation();mapStyle=b.dataset.sty;try{localStorage.setItem('cafemap-style',mapStyle)}catch(_){}syncLv();drawBase();render()});syncLv();
+function setStyle(v){if(!STY[v])return;try{localStorage.setItem('cafemap-style',v)}catch(_){}if(morphT!==null){savedStyle=v;return}mapStyle=v;drawBase();render()}
 // line style preview control
 if(B.preview){const lm=document.getElementById('lmode');lm.hidden=false;const bs=[...lm.querySelectorAll('button')];const sync=()=>bs.forEach(b=>b.setAttribute('aria-pressed',b.dataset.lm===lineMode));sync();
   bs.forEach(b=>b.onclick=e=>{e.stopPropagation();lineMode=b.dataset.lm;try{localStorage.setItem('cafemap-lines',lineMode)}catch(_){}sync();render()})}
